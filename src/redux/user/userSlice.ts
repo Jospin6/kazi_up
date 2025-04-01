@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
+import { RootState } from "../store";
 
 interface User {
     id: string;
@@ -29,12 +30,14 @@ interface User {
 
 interface UserState {
     users: User[];
+    user: User | null;
     loading: boolean;
     error: string | null;
 }
 
 const initialState: UserState = {
     users: [],
+    user: null,
     loading: false,
     error: null,
 };
@@ -44,8 +47,8 @@ export const fetchUsers = createAsyncThunk("users/fetchUsers", async () => {
     return response.data;
 });
 
-export const createUser = createAsyncThunk("users/createUser", async (user: Omit<User, "id">) => {
-    const response = await axios.post("/api/users", user);
+export const getUser = createAsyncThunk("users/getUser", async (id: string) => {
+    const response = await axios.get(`/api/users/${id}`);
     return response.data;
 });
 
@@ -77,8 +80,8 @@ const userSlice = createSlice({
                 state.loading = false;
                 state.error = action.error.message || "Failed to fetch users";
             })
-            .addCase(createUser.fulfilled, (state, action: PayloadAction<User>) => {
-                state.users.push(action.payload);
+            .addCase(getUser.fulfilled, (state, action: PayloadAction<User>) => {
+                state.user = action.payload;
             })
             .addCase(updateUser.fulfilled, (state, action: PayloadAction<User>) => {
                 const index = state.users.findIndex((user) => user.id === action.payload.id);
@@ -91,5 +94,8 @@ const userSlice = createSlice({
             });
     },
 });
+
+export const selectUsers = (state: RootState) => state.user.users
+export const selectUser = (state: RootState) => state.user.user
 
 export default userSlice.reducer;

@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
+import { RootState } from "../store";
 
 interface Job {
     id: string;
@@ -20,12 +21,14 @@ interface Job {
 
 interface JobState {
     jobs: Job[];
+    job: Job | null;
     loading: boolean;
     error: string | null;
 }
 
 const initialState: JobState = {
     jobs: [],
+    job: null,
     loading: false,
     error: null,
 };
@@ -34,6 +37,11 @@ export const fetchJobs = createAsyncThunk("jobs/fetchJobs", async () => {
     const response = await axios.get("/api/jobs");
     return response.data;
 });
+
+export const getJob = createAsyncThunk("jobs/getJob", async (id: string) => {
+    const response = await axios.get(`/api/jobs/${id}`);
+    return response.data;
+})
 
 export const createJob = createAsyncThunk("jobs/createJob", async (job: Omit<Job, "id">) => {
     const response = await axios.post("/api/jobs", job);
@@ -68,6 +76,18 @@ const jobSlice = createSlice({
                 state.loading = false;
                 state.error = action.error.message || "Failed to fetch jobs";
             })
+            .addCase(getJob.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getJob.fulfilled, (state, action: PayloadAction<Job>) => {
+                state.loading = false;
+                state.job = action.payload;
+            })
+            .addCase(getJob.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to fetch job";
+            })
             .addCase(createJob.fulfilled, (state, action: PayloadAction<Job>) => {
                 state.jobs.push(action.payload);
             })
@@ -82,5 +102,8 @@ const jobSlice = createSlice({
             });
     },
 });
+
+export const selectJobs = (state: RootState) => state.job.jobs
+export const selectJob = (state: RootState) => state.job.job
 
 export default jobSlice.reducer;

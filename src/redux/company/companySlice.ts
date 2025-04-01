@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
+import { RootState } from "../store";
 
 interface Company {
     id: string;
@@ -18,18 +19,25 @@ interface Company {
 
 interface CompanyState {
     companies: Company[];
+    company: Company | null
     loading: boolean;
     error: string | null;
 }
 
 const initialState: CompanyState = {
     companies: [],
+    company: null,
     loading: false,
     error: null,
 };
 
 export const fetchCompanies = createAsyncThunk("companies/fetchCompanies", async () => {
     const response = await axios.get("/api/companies");
+    return response.data;
+});
+
+export const getCompany = createAsyncThunk("companies/getCompany", async (id: string) => {
+    const response = await axios.get(`/api/companies/${id}`);
     return response.data;
 });
 
@@ -66,6 +74,20 @@ const companySlice = createSlice({
                 state.loading = false;
                 state.error = action.error.message || "Failed to fetch companies";
             })
+
+            .addCase(getCompany.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getCompany.fulfilled, (state, action: PayloadAction<Company>) => {
+                state.loading = false;
+                state.company = action.payload;
+            })
+            .addCase(getCompany.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.error.message || "Failed to fetch company";
+            })
+
             .addCase(createCompany.fulfilled, (state, action: PayloadAction<Company>) => {
                 state.companies.push(action.payload);
             })
@@ -80,5 +102,8 @@ const companySlice = createSlice({
             });
     },
 });
+
+export const selectCompanies = (state: RootState) => state.company.companies
+export const selectCompany = (state: RootState) => state.company.company
 
 export default companySlice.reducer;
