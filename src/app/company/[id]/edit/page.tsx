@@ -1,3 +1,4 @@
+"use client"
 import CompanyForm from "@/components/forms/companyForm"
 import { getCompany, selectCompany } from "@/redux/company/companySlice"
 import { AppDispatch } from "@/redux/store"

@@ -1,3 +1,4 @@
+"use client"
 import EditUserForm from "@/components/forms/editUserForm";
 import { AppDispatch } from "@/redux/store"
 import { getUser, selectUser } from "@/redux/user/userSlice"

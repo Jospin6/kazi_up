@@ -1,3 +1,4 @@
+"use client"
 import { getCompany, selectCompany } from "@/redux/company/companySlice"
 import { AppDispatch } from "@/redux/store"
 import { useEffect } from "react"

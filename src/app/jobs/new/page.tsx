@@ -1,3 +1,4 @@
+"use client"
 import CompanyForm from "@/components/forms/companyForm";
 import JobForm from "@/components/forms/jobForm";
 

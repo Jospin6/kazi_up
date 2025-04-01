@@ -1,3 +1,4 @@
+"use client"
 import CompanyForm from "@/components/forms/companyForm";
 
 export default function NewCompany () {

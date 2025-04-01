@@ -1,3 +1,4 @@
+"use client"
 import { AppDispatch } from "@/redux/store"
 import { getUser, selectUser } from "@/redux/user/userSlice"
 import { useEffect } from "react"

@@ -1,3 +1,4 @@
+"use client"
 import JobCategoryForm from "@/components/forms/jobCategoryForm";
 
 export default function JobCategories() {
