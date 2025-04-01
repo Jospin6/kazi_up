@@ -103,6 +103,7 @@ model Job {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
 model UserActivity {
   id          String       @id @default(uuid())
   type        ActivityType
