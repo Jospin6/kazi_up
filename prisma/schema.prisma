@@ -12,3 +12,127 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id               String      @id @default(uuid())
+  username         String
+  email            String      @unique
+  password         String?
+  accountType      AccountType @default(EMPLOYEE)
+  role             UserRole    @default(USER)
+  avatar           Bytes?
+  location         String?
+  residencyCountry String?
+  nationality      String?
+  gender           String?
+  website          String?
+  github           String?
+  twitter          String?
+  linkedin         String?
+  bio              String?
+  skills           String?
+  languages        String?
+  available        String?
+  timezone         String?
+  annualpay        String?
+  hourlypay        String?
+
+  companyId Company? @relation("UserCompany")
+  jobs      Job[]    @relation("PostedJobs")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  UserActivity UserActivity[]
+}
+
+model Company {
+  id          String  @id @default(uuid())
+  name        String  @unique
+  description String?
+  logo        String?
+  website     String?
+  location    String?
+  industry    String?
+  foundedYear Int?
+  employees   Int?
+
+  // Relations
+  owner   User   @relation("UserCompany", fields: [ownerId], references: [id])
+  ownerId String @unique
+  jobs    Job[]  @relation("CompanyJobs")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Job_category {
+  id    String @id @default(uuid())
+  title String
+  tags  String
+
+  Job Job[]
+}
+
+model Employement_Type {
+  id    String @id @default(uuid())
+  title String
+
+  Job Job[]
+}
+
+model Job {
+  id                 String           @id @default(uuid())
+  title              String
+  description        String
+  salary             String?
+  location           String?
+  remote             Boolean          @default(false)
+  employement_TypeId String
+  employement_Type   Employement_Type @relation(fields: [employement_TypeId], references: [id], onDelete: Cascade)
+  tags               String
+  keywords           String
+
+  company        Company      @relation("CompanyJobs", fields: [companyId], references: [id])
+  companyId      String
+  postedBy       User         @relation("PostedJobs", fields: [postedById], references: [id])
+  postedById     String
+  job_categoryId String
+  job_category   Job_category @relation(fields: [job_categoryId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+model UserActivity {
+  id          String       @id @default(uuid())
+  type        ActivityType
+  year_start  String?
+  year_end    String?
+  title       String? // Role (Expérience), School (Éducation), Title (Projet)
+  company     String? // Utilisé uniquement pour l'expérience
+  url         String?
+  email       String?
+  description String?
+  user        User         @relation(fields: [userId], references: [id])
+  userId      String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  SUPERADMIN
+}
+
+enum AccountType {
+  EMPLOYEE
+  COMPANY
+}
+
+enum ActivityType {
+  EXPERIENCE
+  EDUCATION
+  SIDE_PROJECT
+}
