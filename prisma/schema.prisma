@@ -50,7 +50,7 @@ model Company {
   id          String  @id @default(uuid())
   name        String  @unique
   description String?
-  logo        String?
+  logo        Bytes?
   website     String?
   location    String?
   industry    String?
