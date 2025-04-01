@@ -16,7 +16,10 @@ export async function POST(req: NextRequest) {
     throw new Error('User not found')
   }
 
-  const isPasswordValid = await bcrypt.compare(password, user.password)
+  if (!user.password) {
+    throw new Error('User password is missing');
+  }
+  const isPasswordValid = await bcrypt.compare(password, user.password);
 
   if (!isPasswordValid) {
     throw new Error('Incorrect password')
@@ -25,7 +28,7 @@ export async function POST(req: NextRequest) {
   const token = jwt.sign({ 
     id: user.id, 
     email: user.email, 
-    name: user.name }, SECRET_KEY);
+    username: user.username }, SECRET_KEY);
 
   
   const response = NextResponse.json({ message: "Connexion successful" }, { status: 200 });
