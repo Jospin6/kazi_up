@@ -23,14 +23,6 @@ export default function Home() {
 
   return (
     <div className="">
-      <div className="text-2xl flex justify-between py-[30px]">
-        <Image src={"/kaziUp_white.png"} className="w-[200px] object-cover" alt="kazi up logo" width={200} height={100} />
-
-        <div className="pr-[50px] w-[20%] flex justify-end items-center">
-          <Link href={"#"} className="text-gray-100 text-[16px] mr-4 underline">Post a job</Link>
-          <Button>Login</Button>
-        </div>
-      </div>
       <div className="text-center">
         <h1 className="text-6xl bg-gradient-to-r from-[#18CB96] to-gray-300 bg-clip-text text-transparent font-bold">
           Find Your Dream Job in Minutes
