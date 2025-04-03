@@ -1,13 +1,13 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { InputField } from "../ui/InputField";
+import { Button } from "../ui/button";
+import { TextAreaField } from "../ui/textAreaField";
 
 const userSchema = z.object({
     username: z.string().min(3, "Username must be at least 3 characters"),
     email: z.string().email("Invalid email format"),
-    password: z.string().optional(),
-    accountType: z.enum(["EMPLOYEE", "COMPANY"]).default("EMPLOYEE"),
-    role: z.enum(["USER", "ADMIN", "SUPERADMIN"]).default("USER"),
     avatar: z.instanceof(File).optional(),
     location: z.string().optional(),
     residencyCountry: z.string().optional(),
@@ -32,6 +32,7 @@ export default function EditUserForm() {
     const {
         register,
         handleSubmit,
+        setValue,
         formState: { errors },
     } = useForm<UserFormValues>({
         resolver: zodResolver(userSchema),
@@ -42,45 +43,86 @@ export default function EditUserForm() {
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-6 bg-white rounded-lg shadow-md max-w-2xl mx-auto">
-            <div>
-                <label className="block text-sm font-medium text-gray-700">Username</label>
-                <input {...register("username")} className="w-full mt-1 p-2 border rounded-md" />
-                {errors.username && <p className="text-red-500 text-sm">{errors.username.message}</p>}
-            </div>
+        <form onSubmit={handleSubmit(onSubmit)} className="border border-gray-700 p-3 rounded-2xl">
+            <InputField
+                label={"Your Avatar"}
+                type="file"
+                name={"avatar"}
+                onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                        setValue("avatar", file);
+                    }
+                }}
+                placeholder={"Avatar"}
+                register={register}
+                errors={errors}
+            />
+            <InputField
+                label={"username"}
+                name={"username"}
+                placeholder={"Username"}
+                register={register}
+                errors={errors}
+            />
 
-            <div>
-                <label className="block text-sm font-medium text-gray-700">Email</label>
-                <input type="email" {...register("email")} className="w-full mt-1 p-2 border rounded-md" />
-                {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
-            </div>
+            <InputField
+                label={"email"}
+                type="email"
+                name={"email"}
+                placeholder={"Email"}
+                register={register}
+                errors={errors}
+            />
 
-            <div>
-                <label className="block text-sm font-medium text-gray-700">Bio</label>
-                <textarea {...register("bio")} className="w-full mt-1 p-2 border rounded-md" rows={4}></textarea>
-            </div>
+            <TextAreaField
+                label={"Bio"}
+                name={"bio"}
+                placeholder={"bio"}
+                register={register}
+                errors={errors} />
 
-            <div>
-                <label className="block text-sm font-medium text-gray-700">Website</label>
-                <input {...register("website")} className="w-full mt-1 p-2 border rounded-md" />
-            </div>
+            <TextAreaField
+                label={"skills"}
+                name={"skills"}
+                placeholder={"Skills"}
+                register={register}
+                errors={errors} />
 
-            <div>
-                <label className="block text-sm font-medium text-gray-700">GitHub</label>
-                <input {...register("github")} className="w-full mt-1 p-2 border rounded-md" />
-            </div>
+            <InputField
+                label={"website"}
+                name={"website"}
+                placeholder={"https://"}
+                register={register}
+                errors={errors}
+            />
 
-            <div>
-                <label className="block text-sm font-medium text-gray-700">Twitter</label>
-                <input {...register("twitter")} className="w-full mt-1 p-2 border rounded-md" />
-            </div>
+            <InputField
+                label={"github"}
+                name={"github"}
+                placeholder={"ex: jospin6"}
+                register={register}
+                errors={errors}
+            />
 
-            <div>
-                <label className="block text-sm font-medium text-gray-700">LinkedIn</label>
-                <input {...register("linkedin")} className="w-full mt-1 p-2 border rounded-md" />
-            </div>
+            <InputField
+                label={"X"}
+                name={"twitter"}
+                placeholder={"ex: jospinndagano1"}
+                register={register}
+                errors={errors}
+            />
 
-            <button type="submit" className="w-full p-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Save Changes</button>
+            <InputField
+                label={"linkedin"}
+                name={"linkedin"}
+                placeholder={"ex: jospin_ndagano"}
+                register={register}
+                errors={errors}
+            />
+            <div className="flex justify-end my-4">
+                <Button type="submit">Edit my profil</Button>
+            </div>
         </form>
     );
 }
