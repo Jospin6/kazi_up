@@ -8,6 +8,8 @@ import Link from "next/link"; import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import { redirect } from "next/navigation";
 import { signup } from "@/redux/auth/authSlice";
+import { InputField } from "@/components/ui/InputField";
+import { Button } from "@/components/ui/button";
 ;
 
 const schema = z.object({
@@ -30,50 +32,50 @@ export default function RegisterForm() {
 
   const onSubmit = async (data: signupFormData) => {
     setError("");
-        try {
-          const response = await dispatch(signup(data)).unwrap();
-          if (response.data.message) {
-            setError(response.data.message);
-            return
-          }
-        } catch (error) {
-          console.error("Error connexion :", error);
-        }
-        redirect("/");
+    try {
+      const response = await dispatch(signup(data)).unwrap();
+      if (response.data.message) {
+        setError(response.data.message);
+        return
+      }
+    } catch (error) {
+      console.error("Error connexion :", error);
+    }
+    redirect("/");
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow">
-      <h2 className="text-2xl font-bold mb-4">Signup</h2>
+    <div className="w-8/12 mx-auto p-6 border border-gray-700 shadow">
+      <h2 className="text-2xl font-bold mb-4 text-gray-200">Signup</h2>
       {error && <p className="text-red-500">{error}</p>}
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div>
-          <label className="block text-sm font-medium">Email</label>
-          <input type="text" {...register("username")} className="w-full p-2 border rounded" />
-          {errors.username?.message && <p className="text-red-500">{String(errors.username.message)}</p>}
-        </div>
-        <div>
-          <label className="block text-sm font-medium">Email</label>
-          <input type="email" {...register("email")} className="w-full p-2 border rounded" />
-          {errors.email?.message && <p className="text-red-500">{String(errors.email.message)}</p>}
-        </div>
-        <div>
-          <label className="block text-sm font-medium">Password</label>
-          <input type="password" {...register("password")} className="w-full p-2 border rounded" />
-          {errors.password?.message && <p className="text-red-500">{String(errors.password.message)}</p>}
-        </div>
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white p-2 rounded"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Loading..." : "Signup"}
-          </button>
-        </div>
+        <InputField
+          label={"username"}
+          name={"username"}
+          placeholder={"Username"}
+          register={register}
+          errors={errors}
+        />
+        <InputField
+          label={"email"}
+          name={"email"}
+          type="email"
+          placeholder={"Email"}
+          register={register}
+          errors={errors}
+        />
+        <InputField
+          label={"password"}
+          type="password"
+          name={"password"}
+          placeholder={"Password"}
+          register={register}
+          errors={errors}
+        />
+        <Button className="w-4/12">{isSubmitting ? "Loading..." : "Signup"}</Button>
       </form>
       <div className="mt-4 flex text-sm justify-center">
-        <span className="pr-2">Already have an account?</span>
+        <span className="pr-2 text-gray-300">Already have an account?</span>
         <Link href="/login" className="text-blue-500 hover:underline">
           Login
         </Link>

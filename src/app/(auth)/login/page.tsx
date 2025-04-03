@@ -9,6 +9,8 @@ import Link from "next/link";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import { login } from "@/redux/auth/authSlice";
+import { Button } from "@/components/ui/button";
+import { InputField } from "@/components/ui/InputField";
 
 const schema = z.object({
   email: z.string().email("Invalide email"),
@@ -41,30 +43,30 @@ export default function Login() {
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow">
-      <h2 className="text-2xl font-bold mb-4">Login</h2>
+    <div className="w-8/12 mx-auto p-6 border border-gray-700 shadow">
+      <h2 className="text-2xl font-bold mb-4 text-gray-200">Login</h2>
       {error && <p className="text-red-500">{error}</p>}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium">Email</label>
-          <input type="email" {...register("email")} className="w-full p-2 border rounded" />
-          {errors.email?.message && <p className="text-red-500">{String(errors.email.message)}</p>}
-        </div>
-        <div>
-          <label className="block text-sm font-medium">Password</label>
-          <input type="password" {...register("password")} className="w-full p-2 border rounded" />
-          {errors.password?.message && <p className="text-red-500">{String(errors.password.message)}</p>}
-        </div>
-        <button
-          type="submit"
-          className="w-full bg-blue-500 text-white p-2 rounded"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "Connexion..." : "Login"}
-        </button>
+        <InputField
+          label={"Email"}
+          type="email"
+          name={"email"}
+          placeholder={"Email"}
+          register={register}
+          errors={errors}
+        />
+        <InputField
+          label={"Password"}
+          type="password"
+          name={"password"}
+          placeholder={"Password"}
+          register={register}
+          errors={errors}
+        />
+        <Button className="w-4/12">{isSubmitting ? "Connexion..." : "Login"}</Button>
       </form>
       <div className="mt-4 flex text-sm justify-center">
-        <span className="pr-2">Don't have an account?</span>
+        <span className="pr-2 text-gray-300">Don't have an account?</span>
         <Link href="/signup" className="text-blue-500 hover:underline">
           Signup
         </Link>
