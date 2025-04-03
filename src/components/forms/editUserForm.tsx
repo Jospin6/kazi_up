@@ -8,7 +8,7 @@ const userSchema = z.object({
     password: z.string().optional(),
     accountType: z.enum(["EMPLOYEE", "COMPANY"]).default("EMPLOYEE"),
     role: z.enum(["USER", "ADMIN", "SUPERADMIN"]).default("USER"),
-    avatar: z.string().optional(),
+    avatar: z.instanceof(File).optional(),
     location: z.string().optional(),
     residencyCountry: z.string().optional(),
     nationality: z.string().optional(),

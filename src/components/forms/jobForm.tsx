@@ -1,39 +1,51 @@
 "use client"
 import { useForm } from "react-hook-form";
-import { string, z } from "zod";
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import dynamic from "next/dynamic";
 import { Button } from "../ui/button";
-import { Camera, X } from "lucide-react";
-import Select from 'react-select'
+import { InputField } from "../ui/InputField";
+import { RichTextField } from "../ui/RichTextField";
+import { SelectField } from "../ui/selectField";
+import { customStyles } from "@/lib/utils";
+import { X } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/redux/store";
+import { createJob } from "@/redux/job/jobSlice";
 
-const Editor = dynamic(() => import("@tinymce/tinymce-react").then((mod) => mod.Editor), {
-    ssr: false,
-});
+const Select = dynamic(() => import("react-select"), { ssr: false });
 
 const jobSchema = z.object({
-    title: z.string().min(3, "Title must be at least 3 characters"),
+    position: z.string().min(3, "Title must be at least 3 characters"),
+    companyName: z.string().optional(),
     description: z.string().min(10, "Description must be at least 10 characters"),
-    salary: z.string().optional(),
-    remote: z.string().optional(),
+    jobCategoryId: z.string().optional(),
     employementTypeId: z.string().min(1, "Employment Type is required"),
-    tags: z.string().min(1, "Tags are required"),
-    keywords: z.string().min(1, "Keywords are required"),
-    companyId: z.string().min(1, "Company is required"),
-    postedById: z.string().min(1, "Posted By is required"),
-    jobCategoryId: z.string().min(1, "Job Category is required"),
-    name: z.string().optional(),
-    employement_type: z.string().optional(),
-    job_restricted: z.string().optional(),
-    apply_email: z.string().optional(),
+    primaryTag: z.string().optional(),
+    tags: z.string().optional(),
+    jobRestricted: z.string().optional(),
+    remote: z.string().optional(),
+    companyLogo: z.instanceof(File).optional(),
+    howToApply: z.string().optional(),
+    salaryRange: z.string().optional(),
     website: z.string().optional(),
-    logo: z.string().optional(),
-    job_sector: z.string().optional(),
 });
 type JobFormValues = z.infer<typeof jobSchema>;
 
 export default function JobForm() {
+    const dispatch = useDispatch<AppDispatch>()
+    const {
+        register,
+        control,
+        handleSubmit,
+        reset,
+        setValue,
+        formState: { errors },
+    } = useForm<JobFormValues>({
+        resolver: zodResolver(jobSchema),
+    });
+
     const availableTags = [
         'React',
         'JavaScript',
@@ -45,150 +57,143 @@ export default function JobForm() {
         'C++',
         'Ruby'
     ];
+
+    const locations = [
+        'RDCongo',
+        'Rwanda',
+        'USA',
+        'Gabon',
+        'France',
+        'Egypt',
+        'Canada',
+        'Mexique',
+        'Argentine',
+        'Chine'
+    ];
     const [tags, setTags] = useState<string[]>([]);
-    const handleInputChange = (value: string) => {
-        // setTags([...tags, value]);
-    };
-
-
-    const {
-        register,
-        handleSubmit,
-        setValue,
-        formState: { errors },
-    } = useForm<JobFormValues>({
-        resolver: zodResolver(jobSchema),
-    });
-
-    const [editorContent, setEditorContent] = useState("");
-
-    const onSubmit = (data: JobFormValues) => {
-        console.log({ ...data, description: editorContent });
-    };
+    const [restrictions, setRestrictions] = useState<string[]>([]);
 
     const tagOptions = availableTags.map((tag) => ({
         label: `${tag}`,
         value: tag,
     }));
 
+    const restrictionsOptions = locations.map((restriction) => ({
+        label: `${restriction}`,
+        value: restriction,
+    }));
+
     const handleChange = (selectedOption: any) => {
         if (selectedOption && !tags.includes(selectedOption.value) && selectedOption.value.length >= 2) {
-            setTags([...tags, selectedOption.value]);   
+            setTags([...tags, selectedOption.value]);
+        }
+    };
+
+    const handleChangeRestrictions = (selectedOption: any) => {
+        if (selectedOption && !restrictions.includes(selectedOption.value) && selectedOption.value.length >= 2) {
+            setRestrictions([...restrictions, selectedOption.value]);
         }
     };
 
     const removeItem = (i: any) => {
-        let newTags = tags.filter((_, index) => index !== i )
+        let newTags = tags.filter((_, index) => index !== i)
         setTags([...newTags])
     }
 
-    const customStyles = {
-        control: (provided: any) => ({
-            ...provided,
-            borderColor: 'lightgray',
-            boxShadow: 'none',
-            '&:hover': {
-                borderColor: 'blue',
-            },
-        }),
-        menu: (provided: any) => ({
-            ...provided,
-            zIndex: 9999,
-        }),
-        option: (provided: any, state: any) => ({
-            ...provided,
-            backgroundColor: state.isSelected ? 'blue' : state.isFocused ? 'lightgray' : 'white',
-            color: state.isSelected ? 'white' : 'black',
-        }),
-    };
+    const removeItemRestriction = (i: any) => {
+        let newRestrictions = restrictions.filter((_, index) => index !== i)
+        setRestrictions([...newRestrictions])
+    }
 
+    const onSubmit = (data: JobFormValues) => {
+        const formData = new FormData();
+        formData.append("position", data.position);
+        if (data.companyName) formData.append("companyName", data.companyName);
+        formData.append("description", data.description);
+        if (data.jobCategoryId) formData.append("jobCategoryId", data.jobCategoryId);
+        formData.append("employementTypeId", data.employementTypeId);
+        if (data.primaryTag) formData.append("primaryTag", data.primaryTag);
+        if (data.tags) formData.append("tags", data.tags);
+        if (data.jobRestricted) formData.append("jobRestricted", data.jobRestricted);
+        if (data.remote) formData.append("remote", data.remote);
+        if (data.howToApply) formData.append("howToApply", data.howToApply);
+        if (data.salaryRange) formData.append("salaryRange", data.salaryRange);
+        if (data.website) formData.append("howToApply", data.website);
+
+        if (data.companyLogo) {
+            formData.append("companyLogo", data.companyLogo);
+          } else {
+            console.error("Aucun fichier sélectionné !");
+          }
+        dispatch(createJob(formData))
+    };
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="">
-
-
             <div className="border border-gray-700 p-3 rounded-2xl">
+                <InputField
+                    label={"Job position"}
+                    name={"position"}
+                    placeholder={"Position"}
+                    register={register}
+                    errors={errors}
+                />
 
-                <div className="text-gray-300 mb-4">
-                    <label className="block text-sm mb-2 font-medium">Position</label>
-                    <input {...register("title")} placeholder="Position" className="w-full h-[35px] mt-1 p-2 border border-gray-700 rounded-md" />
-                    {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
-                </div>
+                <InputField
+                    label={"company name"}
+                    name={"companyName"}
+                    placeholder={"Company name"}
+                    register={register}
+                    errors={errors}
+                />
 
-                <div className="text-gray-300 mb-4">
-                    <label className="block text-[12px] font-medium">COMPANY NAME</label>
-                    <input {...register("name")} placeholder="Company name" className="w-full h-[35px] mt-1 p-2 border border-gray-700 rounded-md" />
-                    {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
-                </div>
+                <RichTextField label={"Description"} control={control} name="description" />
 
-                <div className="text-gray-300 mb-4">
-                    <label className="block text-sm mb-2 font-medium">Description</label>
-                    <Editor
-                        apiKey='yhg1lt3xy8nbv42slt60rarcifk8dwhj5hjax3fov0nnpiji'
-                        init={{
-                            plugins: [
-                                // Core editing features
-                                'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'lists', 'searchreplace', 'wordcount',
-                                // Your account includes a free trial of TinyMCE premium features
-                                // Try the most popular premium features until Apr 15, 2025:
-                                // 'checklist', 'mediaembed', 'casechange', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown', 'importword', 'exportword', 'exportpdf'
-                            ],
-                            toolbar: 'undo redo | bold italic underline strikethrough | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-                            tinycomments_mode: 'embedded',
-                            tinycomments_author: 'Author name',
-                            menubar: '',
-                            mergetags_list: [
-                                { value: 'First.Name', title: 'First Name' },
-                                { value: 'Email', title: 'Email' },
-                            ],
-                        }}
-                        initialValue="Job description!"
-                    />
-                </div>
+                <SelectField
+                    name={"jobCategoryId"}
+                    label={"Job Sector"}
+                    options={[
+                        { value: "Technologie", label: "Technologie" },
+                        { value: "Economie", label: "Economie" }]}
+                    register={register}
+                    errors={errors}
+                />
 
+                <SelectField
+                    name={"employementType"}
+                    label={"Employement Type"}
+                    options={[
+                        { value: "Full time", label: "Full time" },
+                        { value: "Part time", label: "Part time" }]}
+                    register={register}
+                    errors={errors}
+                />
 
-                <div className="text-gray-300 mb-4">
-                    <label className="block text-sm mb-2 font-medium">Job Sector</label>
-                    <select {...register("job_sector")} className="w-full h-[35px] mt-1 p-2 border border-gray-700 rounded-md" id="">
-                        <option value="">Technologie</option>
-                        <option value="">Economie</option>
-                    </select>
-                    {errors.job_sector && <p className="text-red-500 text-sm">{errors.job_sector.message}</p>}
-                </div>
-
-                <div className="text-gray-300 mb-4">
-                    <label className="block text-sm mb-2 font-medium">Employement Type</label>
-                    <select {...register("employement_type")} className="w-full h-[35px] mt-1 p-2 border border-gray-700 rounded-md" id="">
-                        <option value="">Full time</option>
-                        <option value="">Part time</option>
-                    </select>
-                    {errors.employement_type && <p className="text-red-500 text-sm">{errors.employement_type.message}</p>}
-                </div>
-
-                <div className="text-gray-300 mb-4">
-                    <label className="block text-sm mb-2 font-medium">Primary tag</label>
-                    <select {...register("employement_type")} className="w-full h-[35px] mt-1 p-2 border border-gray-700 rounded-md" id="">
-                        <option value="">Full stack</option>
-                        <option value="">Web dev</option>
-                    </select>
-                    {errors.employement_type && <p className="text-red-500 text-sm">{errors.employement_type.message}</p>}
-                </div>
+                <SelectField
+                    name={"primaryTag"}
+                    label={"Primary tag"}
+                    options={[
+                        { value: "Full time", label: "Full time" },
+                        { value: "Part time", label: "Part time" }]}
+                    register={register}
+                    errors={errors}
+                />
 
                 <div className="text-gray-300 mb-4">
 
-                    <label className="block text-sm mb-2 font-medium">Keywords, tags</label>
+                    <label className="block text-sm mb-2 font-medium">{"Keywords, tags".toLocaleUpperCase()}</label>
                     <div className="flex flex-wrap">
                         {
                             tags.map((tag, i) => (
-                            <div 
-                                className="text-[12px] rounded-2xl mr-2 px-3 py-[3px] flex items-center border border-gray-700 my-2" key={i}>
-                                    <span>{tag}</span> <X size={12} className="ml-[3px] cursor-pointer" onClick={() => removeItem(i)}/>
-                            </div>))
+                                <div
+                                    className="text-[12px] rounded-2xl mr-2 px-3 py-[3px] flex items-center border border-gray-700 my-2" key={i}>
+                                    <span>{tag}</span> <X size={12} className="ml-[3px] cursor-pointer" onClick={() => removeItem(i)} />
+                                </div>))
                         }
                     </div>
                     <Select
                         options={tagOptions}
                         onChange={handleChange}
-                        onInputChange={handleInputChange}
+                        onInputChange={handleChange}
                         placeholder="choose tags"
                         isClearable
                         styles={customStyles}
@@ -196,98 +201,84 @@ export default function JobForm() {
                 </div>
 
                 <div className="text-gray-300 mb-4">
-                    <div className="">
-                        Restricted
+                    <label className="block text-sm mb-2 font-medium">{"Job Restricted".toLocaleUpperCase()}</label>
+                    <div className="flex flex-wrap">
+                        {
+                            restrictions.map((rect, i) => (
+                                <div
+                                    className="text-[12px] rounded-2xl mr-2 px-3 py-[3px] flex items-center border border-gray-700 my-2" key={i}>
+                                    <span>{rect}</span> <X size={12} className="ml-[3px] cursor-pointer" onClick={() => removeItemRestriction(i)} />
+                                </div>))
+                        }
                     </div>
-                    <label className="block text-sm mb-2 font-medium">Job Restricted</label>
-                    <select {...register("job_restricted")} className="w-full h-[35px] mt-1 p-2 border border-gray-700 rounded-md" id="">
-                        <option value="">RDCongo</option>
-                        <option value="">USA</option>
-                    </select>
-                    {errors.job_restricted && <p className="text-red-500 text-sm">{errors.job_restricted.message}</p>}
+                    <Select
+                        options={restrictionsOptions}
+                        onChange={handleChangeRestrictions}
+                        onInputChange={handleChangeRestrictions}
+                        placeholder="choose location"
+                        isClearable
+                        styles={customStyles}
+                    />
                 </div>
 
-                <div className="text-gray-300 mb-4">
-                    <div className="">
-                        Remote
-                    </div>
-                    <label className="block text-sm mb-2 font-medium">Remote</label>
-                    <select {...register("remote")} className="w-full h-[35px] mt-1 p-2 border border-gray-700 rounded-md" id="">
-                        <option value="">Onsite</option>
-                        <option value="">Hybrid</option>
-                        <option value="">Remote</option>
-                    </select>
-                    {errors.remote && <p className="text-red-500 text-sm">{errors.remote.message}</p>}
-                </div>
-
-
+                <SelectField
+                    name={"remote"}
+                    label={"Remote"}
+                    options={[
+                        { value: "onsite", label: "Onsite" },
+                        { value: "hybrid", label: "Hybrid" },
+                        { value: "remote", label: "Remote" }]}
+                    register={register}
+                    errors={errors}
+                />
             </div>
-
-
-
-
-
-
-
-
-
-
-
 
 
             <div className="border border-gray-700 p-3 rounded-2xl mt-4">
                 <h1 className="text-center text-[14px] text-gray-300">JOB DETAILS</h1>
-                <div className="block text-[12px] font-medium text-gray-300">COMPANY LOGO</div>
-                <div className="text-gray-300 mb-4">
-                    <label htmlFor="companyImg" className="h-[100px] w-[100px] rounded-full border border-gray-700 flex justify-center items-center text-sm mb-2 font-medium">
-                        <Camera size={40} className="text-gray-600" />
-                    </label>
-                    <input type="file" {...register("logo")} id="companyImg" className="w-full hidden h-[35px] mt-1 p-2 border border-gray-700 rounded-md" />
-                </div>
+                <InputField
+                    label={"company logo"}
+                    type="file"
+                    name={"companyLogo"}
+                    onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setValue("companyLogo", file);
+                        }
+                      }}
+                    placeholder={"Company logo"}
+                    register={register}
+                    errors={errors}
+                />
 
-                <div className="text-gray-300 mb-4">
-                    <label className="block text-[12px] font-medium">HOW TO APPLY?</label>
-                    <Editor
-                        apiKey='yhg1lt3xy8nbv42slt60rarcifk8dwhj5hjax3fov0nnpiji'
-                        init={{
-                            plugins: [
-                                // Core editing features
-                                'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'lists', 'searchreplace', 'wordcount',
-                                // Your account includes a free trial of TinyMCE premium features
-                                // Try the most popular premium features until Apr 15, 2025:
-                                // 'checklist', 'mediaembed', 'casechange', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown', 'importword', 'exportword', 'exportpdf'
-                            ],
-                            toolbar: 'undo redo | bold italic underline strikethrough |  spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-                            tinycomments_mode: 'embedded',
-                            tinycomments_author: 'Author name',
-                            menubar: '',
-                            mergetags_list: [
-                                { value: 'First.Name', title: 'First Name' },
-                                { value: 'Email', title: 'Email' },
-                            ],
-                        }}
-                    />
-                </div>
+                <RichTextField label={"how to apply"} control={control} name="howToApply" />
+                <InputField
+                    label={"salary"}
+                    name={"salaryRange"}
+                    placeholder={"Salary range"}
+                    register={register}
+                    errors={errors}
+                />
 
-                <div className="text-gray-300 mb-4">
-                    <label className="block text-sm mb-2 font-medium">Salary</label>
-                    <input {...register("salary")} placeholder="Salary" className="w-full h-[35px] mt-1 p-2 border border-gray-700 rounded-md" />
-                </div>
-
-                <div className="text-gray-300 mb-4">
-                    <label className="block text-[12px] font-medium">APPLY URL</label>
-                    <input {...register("website")} placeholder="https://" className="w-full h-[35px] mt-1 p-2 border border-gray-700 rounded-md" />
-                </div>
+                <InputField
+                    label={"website"}
+                    name={"website"}
+                    placeholder={"https://"}
+                    register={register}
+                    errors={errors}
+                />
 
                 <div className="text-center text-sm text-gray-300">
                     -- Or --
                 </div>
 
-                <div className="text-gray-300 mb-4">
-                    <label className="block text-[12px] font-medium">APPLY EMAIL ADDRESS</label>
-                    <input {...register("apply_email")} placeholder="Email" className="w-full h-[35px] mt-1 p-2 border border-gray-700 rounded-md" />
-                </div>
-
+                <InputField
+                    label={"apply email"}
+                    name={"website"}
+                    placeholder={"https://"}
+                    register={register}
+                    errors={errors}
+                />
             </div>
 
             <div className="flex justify-end my-4">

@@ -3,20 +3,21 @@ import axios from "axios";
 import { RootState } from "../store";
 
 interface Job {
-    id: string;
-    title: string;
-    description: string;
-    salary?: string;
-    location?: string;
-    remote: boolean;
-    employement_TypeId: string;
+    id?: string;
+    position: string;
+    companyName?: string;
+    description?: string;
+    jobCategoryId?: string;
+    employementTypeId: string;
+    primaryTag: string;
     tags: string;
-    keywords: string;
-    companyId: string;
-    postedById: string;
-    job_categoryId: string;
-    createdAt: string;
-    updatedAt: string;
+    jobRestricted: string;
+    remote: string;
+    companyLogo?: File;
+    howToApply: string;
+    salaryRange: string;
+    createdAt?: string;
+    userId?: any
 }
 
 interface JobState {
@@ -43,10 +44,19 @@ export const getJob = createAsyncThunk("jobs/getJob", async (id: string) => {
     return response.data;
 })
 
-export const createJob = createAsyncThunk("jobs/createJob", async (job: Omit<Job, "id">) => {
-    const response = await axios.post("/api/jobs", job);
-    return response.data;
-});
+export const createJob = createAsyncThunk<Job, FormData>(
+    "jobs/createJob",
+    async (formData, { rejectWithValue }) => {
+        try {
+            const response = await axios.post("/api/jobs", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+            return response.data;
+        } catch (error: any) {
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
 
 export const updateJob = createAsyncThunk("jobs/updateJob", async (job: Job) => {
     const response = await axios.put(`/api/jobs/${job.id}`, job);
