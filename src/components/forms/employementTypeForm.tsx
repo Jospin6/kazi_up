@@ -1,6 +1,8 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { InputField } from "../ui/InputField";
+import { Button } from "../ui/button";
 
 const employmentTypeSchema = z.object({
     title: z.string().min(3, "Title must be at least 3 characters"),
@@ -22,13 +24,17 @@ export function EmploymentTypeForm() {
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-6 bg-white rounded-lg shadow-md max-w-md mx-auto">
-            <div>
-                <label className="block text-sm font-medium text-gray-700">Title</label>
-                <input {...register("title")} className="w-full mt-1 p-2 border rounded-md" />
-                {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
+        <form onSubmit={handleSubmit(onSubmit)} className="border border-gray-700 p-3 rounded-2xl">
+            <InputField
+                label={"Title"}
+                name={"title"}
+                placeholder={"Title"}
+                register={register}
+                errors={errors}
+            />
+            <div className="flex justify-end my-4">
+                <Button type="submit">Add Employement</Button>
             </div>
-            <button type="submit" className="w-full p-2 bg-green-600 text-white rounded-md hover:bg-green-700">Submit</button>
         </form>
     );
 }

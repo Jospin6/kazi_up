@@ -1,3 +1,4 @@
+import { AdminNavbar } from "@/components/navbar/adminNavbar";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -12,10 +13,9 @@ export default function AdminLayout({
 }>) {
   return (
     <div
-      className={`bg-white fixed left-0 top-0 z-50 w-full h-screen`}
+      className={`bg-[#070F2B] fixed left-0 top-0 z-50 w-full h-screen`}
     >
-      <div className="px-28 h-[60px] flex justify-start items-center text-3xl">KaziUp admin</div>
-
+      <AdminNavbar/>
       {children}
     </div>
   );
