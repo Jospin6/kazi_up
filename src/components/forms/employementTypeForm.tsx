@@ -3,6 +3,9 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { InputField } from "../ui/InputField";
 import { Button } from "../ui/button";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/redux/store";
+import { createEmployementTypes } from "@/redux/employementType/employementTypeSlice";
 
 const employmentTypeSchema = z.object({
     title: z.string().min(3, "Title must be at least 3 characters"),
@@ -11,16 +14,19 @@ const employmentTypeSchema = z.object({
 type EmploymentTypeFormValues = z.infer<typeof employmentTypeSchema>;
 
 export function EmploymentTypeForm() {
+    const dispatch = useDispatch<AppDispatch>()
     const {
         register,
         handleSubmit,
+        reset,
         formState: { errors },
     } = useForm<EmploymentTypeFormValues>({
         resolver: zodResolver(employmentTypeSchema),
     });
 
     const onSubmit = (data: EmploymentTypeFormValues) => {
-        console.log(data);
+        dispatch(createEmployementTypes(data))
+        reset()
     };
 
     return (

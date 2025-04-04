@@ -11,7 +11,7 @@ export default function JobCategories() {
     const jobCategories = useSelector(selectJobCategories)
     useEffect(() => {
         dispatch(fetchJobCategories())
-    }, [])
+    }, [dispatch])
     return <div className="w-10/12 m-auto flex">
         <div className="w-8/12 pr-4">
             {jobCategories.map(jobcateg => (

@@ -27,7 +27,6 @@ export default function JobCategoryForm() {
     });
 
     const onSubmit = (data: JobCategoryFormValues) => {
-        console.log(data);
         dispatch(createJobCategory(data))
         reset()
     };

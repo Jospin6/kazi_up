@@ -4,6 +4,7 @@ import jobReducer from './job/jobSlice'
 import jobCategoryReducer from './jobCategory/jobCategorySlice'
 import userReducer from './user/userSlice'
 import userActivityReducer from './userActivity/userActivitySlice'
+import employementTypeReducer from './employementType/employementTypeSlice'
 
 export const store = configureStore({
     reducer: {
@@ -11,7 +12,8 @@ export const store = configureStore({
         job: jobReducer,
         jobCategory: jobCategoryReducer,
         user: userReducer,
-        userActivity: userActivityReducer
+        userActivity: userActivityReducer,
+        employementType: employementTypeReducer
     }
 })
 
