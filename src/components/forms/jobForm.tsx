@@ -30,6 +30,7 @@ const jobSchema = z.object({
     howToApply: z.string().optional(),
     salaryRange: z.string().optional(),
     website: z.string().optional(),
+    userId: z.string().optional()
 });
 type JobFormValues = z.infer<typeof jobSchema>;
 

@@ -7,8 +7,8 @@ import { Button } from "../ui/button";
 
 const userActivitySchema = z.object({
     type: z.enum(["EXPERIENCE", "EDUCATION", "SIDE_PROJECT"]),
-    year_start: z.string().optional(),
-    year_end: z.string().optional(),
+    yearStart: z.string().optional(),
+    yearEnd: z.string().optional(),
     title: z.string().optional(),
     company: z.string().optional(),
     url: z.string().url("Invalid URL").optional(),
@@ -38,7 +38,7 @@ export default function ProjectForm() {
                 <div className="col-span-3">
                 <InputField
                     label={"year start"}
-                    name={"year_start"}
+                    name={"yearStart"}
                     placeholder={"Year start"}
                     register={register}
                     errors={errors}
@@ -47,7 +47,7 @@ export default function ProjectForm() {
                 <div className="col-span-3">
                 <InputField
                     label={"year end"}
-                    name={"year_end"}
+                    name={"yearEnd"}
                     placeholder={"Year end"}
                     register={register}
                     errors={errors}

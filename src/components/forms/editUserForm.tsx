@@ -17,7 +17,7 @@ const userSchema = z.object({
     email: z.string().email("Invalid email format"),
     avatar: z.instanceof(File).optional(),
     location: z.string().optional(),
-    residencyCountry: z.string().optional(),
+    residentcyCountry: z.string().optional(),
     nationality: z.string().optional(),
     gender: z.string().optional(),
     website: z.string().optional(),
