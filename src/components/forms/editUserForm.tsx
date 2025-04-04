@@ -4,6 +4,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { InputField } from "../ui/InputField";
 import { Button } from "../ui/button";
 import { TextAreaField } from "../ui/textAreaField";
+import { useState } from "react";
+import dynamic from "next/dynamic";
+import { customStyles } from "@/lib/utils";
+import { Label } from "../ui/label";
+import { SelectField } from "../ui/selectField";
+
+const Select = dynamic(() => import("react-select"), { ssr: false });
 
 const userSchema = z.object({
     username: z.string().min(3, "Username must be at least 3 characters"),
@@ -38,6 +45,22 @@ export default function EditUserForm() {
         resolver: zodResolver(userSchema),
     });
 
+    const countries = ['RDCongo', 'Rwanda', 'United state', 'France', 'Chine', 'Israel', 'Inde', 'Brasile']
+
+    const [location, setLocation] = useState<string>();
+    const handleLocationChange = (selectedOption: any) => setLocation(selectedOption.value)
+
+    const [residencyCountry, setResidencyCountry] = useState<string>();
+    const handleResidencyCountryChange = (selectedOption: any) => setResidencyCountry(selectedOption.value)
+
+    const [nationality, setNationality] = useState<string>();
+    const handleNationalityChange = (selectedOption: any) => setNationality(selectedOption.value)
+
+    const countriesOptions = countries.map((country) => ({
+        label: `${country}`,
+        value: country,
+    }));
+
     const onSubmit = (data: UserFormValues) => {
         console.log(data);
     };
@@ -71,6 +94,52 @@ export default function EditUserForm() {
                 type="email"
                 name={"email"}
                 placeholder={"Email"}
+                register={register}
+                errors={errors}
+            />
+
+            <div className="mb-4">
+                <Label className="text-[12px] text-gray-300 mb-1 font-medium">Location</Label>
+                <Select
+                    options={countriesOptions}
+                    onChange={handleLocationChange}
+                    onInputChange={handleLocationChange}
+                    placeholder="Location"
+                    isClearable
+                    styles={customStyles}
+                />
+            </div>
+
+            <div className="mb-4">
+                <Label className="text-[12px] text-gray-300 mb-1 font-medium">Residency Country</Label>
+                <Select
+                    options={countriesOptions}
+                    onChange={handleResidencyCountryChange}
+                    onInputChange={handleResidencyCountryChange}
+                    placeholder="Residency country"
+                    isClearable
+                    styles={customStyles}
+                />
+            </div>
+
+            <div className="mb-4">
+                <Label className="text-[12px] text-gray-300 mb-1 font-medium">Nationality</Label>
+                <Select
+                    options={countriesOptions}
+                    onChange={handleNationalityChange}
+                    onInputChange={handleNationalityChange}
+                    placeholder="Nationality"
+                    isClearable
+                    styles={customStyles}
+                />
+            </div>
+
+            <SelectField
+                name={"gender"}
+                label={"Gender"}
+                options={[
+                    { value: "male", label: "Male" },
+                    { value: "femal", label: "Femal" }]}
                 register={register}
                 errors={errors}
             />
@@ -117,6 +186,44 @@ export default function EditUserForm() {
                 label={"linkedin"}
                 name={"linkedin"}
                 placeholder={"ex: jospin_ndagano"}
+                register={register}
+                errors={errors}
+            />
+
+            <InputField
+                label={"Languages"}
+                name={"languages"}
+                placeholder={"ex: English, French"}
+                register={register}
+                errors={errors}
+            />
+
+            <InputField
+                label={"available"}
+                name={"available"}
+                type="date"
+                placeholder={""}
+                register={register}
+                errors={errors}
+            />
+            <InputField
+                label={"timezone"}
+                name={"timezone"}
+                placeholder={"Ex: +1, +2, +4"}
+                register={register}
+                errors={errors}
+            />
+            <InputField
+                label={"annual pay"}
+                name={"annualpay"}
+                placeholder={"Ex: 30000"}
+                register={register}
+                errors={errors}
+            />
+            <InputField
+                label={"hourly pay"}
+                name={"hourlypay"}
+                placeholder={"Ex: 15"}
                 register={register}
                 errors={errors}
             />
