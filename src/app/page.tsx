@@ -1,17 +1,15 @@
 "use client"
 import { fetchJobs, selectJobs } from "@/redux/job/jobSlice";
 import { AppDispatch } from "@/redux/store";
-import Image from "next/image";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { AspectRatio } from "@/components/ui/aspect-ratio"
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowBigDown, ArrowDown, Search } from "lucide-react";
+import { ArrowDown, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Card, CardHeader } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 export default function Home() {
   const dispatch = useDispatch<AppDispatch>()
@@ -33,7 +31,7 @@ export default function Home() {
         <div className="flex justify-center mt-6">
           <div className="flex items-center h-[40px] rounded-2xl border">
             <Search size={25} className="text-gray-300 font-bold mx-[5px]" />
-            <Input placeholder="Keyword" className="w-[300px] text-gray-100" />
+            <Input placeholder="Keyword" className="w-[300px] border-none text-gray-100" />
           </div>
         </div>
         <div className="flex justify-center text-gray-200 mt-6">
