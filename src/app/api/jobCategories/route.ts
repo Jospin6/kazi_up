@@ -6,7 +6,7 @@ export async function POST(req: Request) {
     const { title, tags } = await req.json()
 
     try {
-        const jobCategory = await prisma.job_category.create({
+        const jobCategory = await prisma.jobCategory.create({
             data: {
                 title,
                 tags
@@ -20,6 +20,6 @@ export async function POST(req: Request) {
 
 
 export async function GET(req: Request) {
-    const job_categories = await prisma.job_category.findMany()
+    const job_categories = await prisma.jobCategory.findMany()
     return NextResponse.json(job_categories)
 }

@@ -7,7 +7,7 @@ import { Button } from "../ui/button";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import { createJobCategory } from "@/redux/jobCategory/jobCategorySlice";
-
+ 
 const jobCategorySchema = z.object({
     title: z.string().min(3, "Title must be at least 3 characters"),
     tags: z.string(),
