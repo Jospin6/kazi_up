@@ -20,9 +20,12 @@ export const AdminNavbar = () => {
             </Link>
             {!user
                 ? (<Link href={"/login"}><Button>Login</Button></Link>)
-                : (<Avatar className="size-[35px] bg-[#18CB96] flex justify-center items-center font-bold">
-                    <AvatarFallback>{user.username.charAt(0)}</AvatarFallback>
-                </Avatar>)}
+                : (
+                    <Link href={"/profil"}>
+                        <Avatar className="size-[35px] bg-[#18CB96] flex justify-center items-center font-bold">
+                            <AvatarFallback>{user.username.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                    </Link>)}
         </div>
     </div>
 }
