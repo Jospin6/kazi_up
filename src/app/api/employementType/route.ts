@@ -1,25 +1,22 @@
 import { NextResponse } from "next/server";
 import prisma from "../../../../prisma/prisma"
 
-
 export async function POST(req: Request) {
-    const { title, tags } = await req.json()
+    const { title } = await req.json()
 
     try {
-        const jobCategory = await prisma.job_category.create({
+        const employementType = await prisma.employement_Type.create({
             data: {
                 title,
-                tags
             }
         })
-        return NextResponse.json(jobCategory, { status: 201 });
+        return NextResponse.json(employementType, { status: 201 });
     } catch (error) {
         return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
     }
 }
 
-
 export async function GET(req: Request) {
-    const job_categories = await prisma.job_category.findMany()
-    return NextResponse.json(job_categories)
+    const employementType = await prisma.employement_Type.findMany()
+    return NextResponse.json(employementType)
 }

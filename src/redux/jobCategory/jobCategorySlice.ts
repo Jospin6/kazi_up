@@ -3,7 +3,7 @@ import axios from "axios";
 import { RootState } from "../store";
 
 interface JobCategory {
-    id: string;
+    id?: string;
     title: string;
     tags: string;
 }
@@ -32,7 +32,7 @@ export const getJobCategory = createAsyncThunk("jobCategories/getJobCategory", a
     return response.data;
 });
 
-export const createJobCategory = createAsyncThunk("jobCategories/createJobCategory", async (jobCategory: Omit<JobCategory, "id">) => {
+export const createJobCategory = createAsyncThunk("jobCategories/createJobCategory", async (jobCategory: JobCategory) => {
     const response = await axios.post("/api/jobCategories", jobCategory);
     return response.data;
 });
