@@ -35,6 +35,7 @@ export const MainCard = ({ job }: { job: Job }) => {
                 <div className="mt-4 text-gray-300 w-full">
                     <div className="w-full flex flex-wrap">{parseStringArray(job.tags).map(tag => (<SubItem key={tag} title={tag} />))}</div>
                     <div className="flex flex-wrap w-full">{parseStringArray(job.jobRestricted).map(res => (<SubItem key={res} title={res} />))}</div>
+                    {/* <Badge variant="outline">Badge</Badge> */}
                 </div>
             </div>
         </div>
