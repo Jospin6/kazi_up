@@ -6,7 +6,10 @@ export async function GET(req: Request) {
     const url = new URL(req.url)
     const id = url.pathname.split('/').pop() as string
     const user = await prisma.user.findUnique({
-        where: {id,}
+        where: {id,},
+        include: {
+          UserActivity: true
+        }
     })
     if (!user) {
         return NextResponse.json({message: "User not found"})

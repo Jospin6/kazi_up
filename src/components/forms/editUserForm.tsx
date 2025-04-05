@@ -12,7 +12,7 @@ import { SelectField } from "../ui/selectField";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "@/redux/store";
-import { getUser, selectUser, updateUser } from "@/redux/user/userSlice";
+import { getUser, selectUser, updateUser, User } from "@/redux/user/userSlice";
 
 const Select = dynamic(() => import("react-select"), { ssr: false });
 
@@ -38,10 +38,8 @@ const userSchema = z.object({
 
 type UserFormValues = z.infer<typeof userSchema>;
 
-export default function EditUserForm() {
-    const currentUser = useCurrentUser()
+export default function EditUserForm({user}: {user: User}) {
     const dispatch = useDispatch<AppDispatch>()
-    const user = useSelector(selectUser)
     const [logoPreview, setLogoPreview] = useState<string | null>(null);
     const [avatar, setAvatar] = useState<File | null>(null);
     const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,11 +50,6 @@ export default function EditUserForm() {
             setLogoPreview(previewUrl);  // Mettre à jour l'aperçu
         }
     };
-    useEffect(() => {
-        if (currentUser?.id) {
-            dispatch(getUser(currentUser.id));
-        }
-    }, [currentUser?.id, dispatch]);
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
     useEffect(() => {
@@ -161,12 +154,12 @@ export default function EditUserForm() {
         if (data.annualpay) formData.append("annualpay", data.annualpay);
         if (data.hourlypay) formData.append("hourlypay", data.hourlypay);
 
-        if (currentUser?.id) {
-            formData.append("userId", currentUser.id);
+        if (user.id) {
+            formData.append("userId", user.id);
         }
 
-        if (currentUser?.id) {
-            dispatch(updateUser({ id: currentUser.id, formData }));
+        if (user.id) {
+            dispatch(updateUser({ id: user.id, formData }));
         }
     };
 

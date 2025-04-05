@@ -2,19 +2,48 @@ import { NextResponse } from "next/server";
 import prisma from "../../../../prisma/prisma"
 
 export async function POST(req: Request) {
-    const { title, type, userId } = await req.json()
+    const data = await req.json();
+
+    const {
+        type,
+        yearStart,
+        yearEnd,
+        title,
+        company,
+        url,
+        email,
+        description,
+        userId
+    } = data;
+
+    const activityData: any = {
+        type,
+        userId,
+        ...(yearStart && { yearStart }),
+        ...(yearEnd && { yearEnd }),
+        ...(title && { title }),
+        ...(company && { company }),
+        ...(url && { url }),
+        ...(email && { email }),
+        ...(description && { description }),
+    };
 
     try {
-        const jobCategory = await prisma.userActivity.create({
-            data: {
-                title,
-                type,
-                userId, 
-            }
-        })
-        return NextResponse.json(jobCategory, { status: 201 });
+        const newActivity = await prisma.userActivity.create({
+            data: activityData
+        });
+
+        const filtered = Object.fromEntries(
+            Object.entries(newActivity).filter(([_, v]) => v !== null && v !== undefined)
+        );
+
+        return NextResponse.json(filtered, { status: 201 });
     } catch (error) {
-        return NextResponse.json({ message: 'Internal Server Error' }, { status: 500 });
+        console.error("POST /user-activity error:", error);
+        return NextResponse.json(
+            { message: "Internal Server Error" },
+            { status: 500 }
+        );
     }
 }
 

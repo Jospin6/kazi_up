@@ -16,7 +16,7 @@ interface UserActivity {
     description?: string
 }
 
-interface User {
+export interface User {
     id: string;
     username: string;
     email: string;
@@ -38,6 +38,7 @@ interface User {
     timezone?: string;
     annualpay?: string;
     hourlypay?: string;
+    UserActivity?: UserActivity[]
 }
 
 interface UserState {
