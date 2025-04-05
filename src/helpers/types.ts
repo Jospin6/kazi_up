@@ -60,21 +60,19 @@ export interface EmploymentType {
 
 export interface Job {
     id: string;
-    title: string;
+    position: string;
+    companyName: string
     description: string;
-    salary?: string;
-    location?: string;
-    remote: boolean;
-    employementTypeId: string;
-    employementType: EmploymentType;
+    primaryTag: string;
     tags: string;
-    keywords: string;
-    company: Company;
-    companyId: string;
-    postedBy: User;
-    postedById: string;
+    jobRestricted: string;
+    remote: string;
+    companyLogo: Buffer;
+    howToApply: string;
+    salaryRange: string;
+    website: string;
     jobCategoryId: string;
-    jobCategory: JobCategory;
+    employementTypeId: string;
     createdAt: Date;
     updatedAt: Date;
 }

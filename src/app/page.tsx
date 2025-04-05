@@ -10,6 +10,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { MainCard } from "@/components/ui/mainCard";
 
 export default function Home() {
   const dispatch = useDispatch<AppDispatch>()
@@ -111,34 +112,12 @@ export default function Home() {
         </div>
         <div className="mt-10">
           <div className="flex justify-between">
-            <span className="text-sm text-gray-300">1.3K Jobs</span>
+            <span className="text-sm text-gray-300">{jobs.length} Jobs</span>
           </div>
           <div>
-            <Card className="bg-gray-900 border-gray-800 mt-2">
-              <div className="flex">
-                <Avatar className="size-[40px]">
-                  <AvatarFallback>JN</AvatarFallback>
-                </Avatar>
-                <div className="ml-4 w-full">
-                  <div className="flex items-center justify-between">
-                    <h1 className="text-gray-200 text-xl font-semibold">Job Title</h1>
-                    <div>
-                      <span className="text-gray-400">2d</span>
-                      <Button className="ml-4">Apply the job</Button>
-                    </div>
-                  </div>
-                  <div>
-                    <h1 className="text-gray-400 text-sm">Company name</h1>
-                  </div>
-                  <div className="mt-4 text-gray-300 flex flex-wrap">
-                    <h4 className="px-4 py-[3px] text-sm rounded-2xl border border-gray-700 mt-2 mr-2">Item 1</h4>
-                    <h4 className="px-4 py-[3px] text-sm rounded-2xl border border-gray-700 mt-2 mr-2">Item 2</h4>
-                    <h4 className="px-4 py-[3px] text-sm rounded-2xl border border-gray-700 mt-2 mr-2">Item 3</h4>
-                    <h4 className="px-4 py-[3px] text-sm rounded-2xl border border-gray-700 mt-2 mr-2">Item 4</h4>
-                  </div>
-                </div>
-              </div>
-            </Card>
+
+            {jobs.map(job => (<MainCard job={job} key={job.id}/>))}
+            
           </div>
         </div>
       </div>

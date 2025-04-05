@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { RootState } from "../store";
 
-interface Job {
+export interface Job {
     id?: string;
     position: string;
     companyName: string;
@@ -13,7 +13,7 @@ interface Job {
     tags: string;
     jobRestricted: string;
     remote: string;
-    companyLogo?: File;
+    companyLogo?: Buffer;
     howToApply?: string;
     salaryRange?: string;
     createdAt?: string;
