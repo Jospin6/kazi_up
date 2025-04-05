@@ -29,8 +29,8 @@ export const MainCard = ({ job }: { job: Job }) => {
                         <Button className="ml-4">Apply the job</Button>
                     </div>
                 </div>
-                <div>
-                    <h1 className="text-gray-400 text-sm"> {job.companyName} </h1>
+                <div className="">
+                    <h1 className="text-gray-400 text-sm flex"> {job.companyName}, {job.salaryRange}$ </h1>
                 </div>
                 <div className="mt-4 text-gray-300 w-full">
                     <div className="w-full flex flex-wrap">{parseStringArray(job.tags).map(tag => (<SubItem key={tag} title={tag} />))}</div>
