@@ -5,19 +5,20 @@ import { RootState } from "../store";
 interface Job {
     id?: string;
     position: string;
-    companyName?: string;
-    description?: string;
-    jobCategoryId?: string;
+    companyName: string;
+    description: string;
+    jobCategoryId: string;
     employementTypeId: string;
     primaryTag: string;
     tags: string;
     jobRestricted: string;
     remote: string;
     companyLogo?: File;
-    howToApply: string;
-    salaryRange: string;
+    howToApply?: string;
+    salaryRange?: string;
     createdAt?: string;
-    userId?: any
+    website: string;
+    userId?: string
 }
 
 interface JobState {

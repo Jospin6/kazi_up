@@ -55,7 +55,7 @@ export default function JobForm() {
         handleSubmit,
         reset,
         setValue,
-        formState: { errors },
+        formState: { errors, isSubmitting },
     } = useForm<JobFormValues>({
         resolver: zodResolver(jobSchema),
     });
@@ -124,6 +124,7 @@ export default function JobForm() {
     }, [logoPreview]);
 
     const onSubmit = (data: JobFormValues) => {
+        console.log("hey putain")
         const formData = new FormData();
         formData.append("position", data.position);
         formData.append("companyName", data.companyName);
@@ -180,7 +181,7 @@ export default function JobForm() {
                 />
 
                 <SelectField
-                    name={"employementType"}
+                    name={"employementTypeId"}
                     label={"Employement Type"}
                     options={[
                         ...employementTypes.map(emp => ({ value: emp.id!, label: emp.title })),
@@ -341,7 +342,9 @@ export default function JobForm() {
             </div>
 
             <div className="flex justify-end my-4">
-                <Button type="submit">Apply the Job</Button>
+                <Button type="submit">
+                    {isSubmitting ? "Loading..." : "Post the Job"}
+                </Button>
             </div>
         </form>
     );
