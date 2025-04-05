@@ -22,7 +22,7 @@ export const InputField: React.FC<InputFieldProps> = ({ label, onChange, onClick
         <Label htmlFor={name} className={type !== "file" 
             ? "block text-[12px] text-gray-300 mb-1 font-medium"
             : imgStyle}>{type !== "file" ? label.toLocaleUpperCase() : <Camera size={40} className="text-gray-600" />}</Label>
-        <Input {...register(name)} onChange={onChange} className={type !== "file" ? className : "hidden"} id={name} placeholder={placeholder} type={type} />
+        <Input {...register(name)} name={name} onChange={onChange} className={type !== "file" ? className : "hidden"} id={name} placeholder={placeholder} type={type} />
         {errors[name] && <span className="text-red-600">{errors[name]?.message}</span>}
     </div>
 }

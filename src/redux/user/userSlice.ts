@@ -7,9 +7,8 @@ interface User {
     username: string;
     email: string;
     password?: string;
-    accountType: string;
     role: string;
-    avatar?: string;
+    avatar?: Buffer;
     location?: string;
     residencyCountry?: string;
     nationality?: string;
@@ -25,7 +24,6 @@ interface User {
     timezone?: string;
     annualpay?: string;
     hourlypay?: string;
-    companyId?: string;
 }
 
 interface UserState {
@@ -52,10 +50,17 @@ export const getUser = createAsyncThunk("users/getUser", async (id: string) => {
     return response.data;
 });
 
-export const updateUser = createAsyncThunk("users/updateUser", async (user: User) => {
-    const response = await axios.put(`/api/users/${user.id}`, user);
-    return response.data;
-});
+export const updateUser = createAsyncThunk<User, { id: string; formData: FormData }>(
+    "users/updateUser",
+    async ({ id, formData }) => {
+        const response = await axios.put(`/api/users/${id}`, formData, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
+        return response.data;
+    }
+);
 
 export const deleteUser = createAsyncThunk("users/deleteUser", async (id: string) => {
     await axios.delete(`/api/users/${id}`);

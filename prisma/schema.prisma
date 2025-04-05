@@ -21,7 +21,7 @@ model User {
   role              UserRole @default(USER)
   avatar            Bytes?
   location          String?
-  residentcyCountry String?
+  residencyCountry String?
   nationality       String?
   gender            String?
   website           String?

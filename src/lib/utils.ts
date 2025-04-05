@@ -27,7 +27,8 @@ export const customStyles = {
 
 export const transformStringToArray = (input: string): string[] => {
   return input
-    .split(",")               
+    .split(",")
     .map(item => item.trim())
     .filter(item => item !== "");
 };
+

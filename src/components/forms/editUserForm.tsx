@@ -4,20 +4,23 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { InputField } from "../ui/InputField";
 import { Button } from "../ui/button";
 import { TextAreaField } from "../ui/textAreaField";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { customStyles } from "@/lib/utils";
 import { Label } from "../ui/label";
 import { SelectField } from "../ui/selectField";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch } from "@/redux/store";
+import { getUser, selectUser, updateUser } from "@/redux/user/userSlice";
 
 const Select = dynamic(() => import("react-select"), { ssr: false });
 
 const userSchema = z.object({
-    username: z.string().min(3, "Username must be at least 3 characters"),
-    email: z.string().email("Invalid email format"),
-    avatar: z.instanceof(File).optional(),
+    username: z.string().optional(),
+    email: z.string().optional(),
     location: z.string().optional(),
-    residentcyCountry: z.string().optional(),
+    residencyCountry: z.string().optional(),
     nationality: z.string().optional(),
     gender: z.string().optional(),
     website: z.string().optional(),
@@ -36,14 +39,84 @@ const userSchema = z.object({
 type UserFormValues = z.infer<typeof userSchema>;
 
 export default function EditUserForm() {
-    const {
-        register,
-        handleSubmit,
-        setValue,
-        formState: { errors },
-    } = useForm<UserFormValues>({
+    const currentUser = useCurrentUser()
+    const dispatch = useDispatch<AppDispatch>()
+    const user = useSelector(selectUser)
+    const [logoPreview, setLogoPreview] = useState<string | null>(null);
+    const [avatar, setAvatar] = useState<File | null>(null);
+    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setAvatar(file);  // Mettre à jour l'état du fichier
+            const previewUrl = URL.createObjectURL(file);  // Créer un URL de prévisualisation
+            setLogoPreview(previewUrl);  // Mettre à jour l'aperçu
+        }
+    };
+    useEffect(() => {
+        if (currentUser?.id) {
+            dispatch(getUser(currentUser.id));
+        }
+    }, [currentUser?.id, dispatch]);
+    const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (user?.id) {
+            const imageUrl = `/api/avatar?userId=${user.id}`;
+            setAvatarUrl(imageUrl);
+        }
+    }, [user?.id]);
+
+
+    const { register, handleSubmit, setValue, reset, formState: { errors, isSubmitting } } = useForm<UserFormValues>({
         resolver: zodResolver(userSchema),
+        defaultValues: {
+            username: '',
+            email: '',
+            location: '',
+            residencyCountry: '',
+            nationality: '',
+            gender: '',
+            website: '',
+            github: '',
+            twitter: '',
+            linkedin: '',
+            bio: '',
+            skills: '',
+            languages: '',
+            available: '',
+            timezone: '',
+            annualpay: '',
+            hourlypay: ''
+        }
     });
+
+    useEffect(() => {
+        if (user) {
+            reset({
+                username: user.username,
+                email: user.email,
+                location: user.location,
+                residencyCountry: user.residencyCountry,
+                nationality: user.nationality,
+                gender: user.gender,
+                website: user.website,
+                github: user.github,
+                twitter: user.twitter,
+                linkedin: user.linkedin,
+                bio: user.bio,
+                skills: user.skills,
+                languages: user.languages,
+                available: user.available,
+                timezone: user.timezone,
+                annualpay: user.annualpay,
+                hourlypay: user.hourlypay
+            });
+
+            setLocation(user.location);
+            setResidencyCountry(user.residencyCountry);
+            setNationality(user.nationality);
+        }
+    }, [user, reset]);
 
     const countries = ['RDCongo', 'Rwanda', 'United state', 'France', 'Chine', 'Israel', 'Inde', 'Brasile']
 
@@ -62,25 +135,74 @@ export default function EditUserForm() {
     }));
 
     const onSubmit = (data: UserFormValues) => {
-        console.log(data);
+        const formData = new FormData();
+
+        if (data.username) formData.append("username", data.username);
+        if (data.email) formData.append("email", data.email);
+
+        if (avatar) {
+            formData.append("avatar", avatar);
+        }
+
+        if (location) formData.append("location", location);
+        if (residencyCountry) formData.append("residencyCountry", residencyCountry);
+        if (nationality) formData.append("nationality", nationality);
+
+        if (data.gender) formData.append("gender", data.gender);
+        if (data.website) formData.append("website", data.website);
+        if (data.github) formData.append("github", data.github);
+        if (data.twitter) formData.append("twitter", data.twitter);
+        if (data.linkedin) formData.append("linkedin", data.linkedin);
+        if (data.bio) formData.append("bio", data.bio);
+        if (data.skills) formData.append("skills", data.skills);
+        if (data.languages) formData.append("languages", data.languages);
+        if (data.available) formData.append("available", data.available);
+        if (data.timezone) formData.append("timezone", data.timezone);
+        if (data.annualpay) formData.append("annualpay", data.annualpay);
+        if (data.hourlypay) formData.append("hourlypay", data.hourlypay);
+
+        if (currentUser?.id) {
+            formData.append("userId", currentUser.id);
+        }
+
+        if (currentUser?.id) {
+            dispatch(updateUser({ id: currentUser.id, formData }));
+        }
     };
+
+
+    useEffect(() => {
+        return () => {
+            if (logoPreview) {
+                URL.revokeObjectURL(logoPreview);
+            }
+        };
+    }, [logoPreview]);
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="border border-gray-700 p-3 rounded-2xl">
-            <InputField
-                label={"Your Avatar"}
-                type="file"
-                name={"avatar"}
-                onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                        setValue("avatar", file);
-                    }
-                }}
-                placeholder={"Avatar"}
-                register={register}
-                errors={errors}
-            />
+            <div className="flex items-center">
+                <div className="mr-4">
+                    <InputField
+                        label={"your avatar"}
+                        type="file"
+                        name={"avatar"}
+                        onChange={handleAvatarChange}
+                        placeholder={"avatar"}
+                        register={register}
+                        errors={errors}
+                    />
+                </div>
+
+                {logoPreview && (
+                    <div className="w-[100px] h-[100px] rounded overflow-hidden">
+                        <img src={logoPreview} alt="Preview" className="object-cover w-full h-full" />
+                    </div>
+                )}
+                {avatarUrl && (
+                    <img src={avatarUrl} alt="Avatar" width={100} height={100} />
+                )}
+            </div>
             <InputField
                 label={"username"}
                 name={"username"}
@@ -102,8 +224,8 @@ export default function EditUserForm() {
                 <Label className="text-[12px] text-gray-300 mb-1 font-medium">Location</Label>
                 <Select
                     options={countriesOptions}
+                    value={countriesOptions.find((opt) => opt.value === location)}
                     onChange={handleLocationChange}
-                    onInputChange={handleLocationChange}
                     placeholder="Location"
                     isClearable
                     styles={customStyles}
@@ -115,7 +237,7 @@ export default function EditUserForm() {
                 <Select
                     options={countriesOptions}
                     onChange={handleResidencyCountryChange}
-                    onInputChange={handleResidencyCountryChange}
+                    value={countriesOptions.find((opt) => opt.value === residencyCountry)}
                     placeholder="Residency country"
                     isClearable
                     styles={customStyles}
@@ -126,8 +248,8 @@ export default function EditUserForm() {
                 <Label className="text-[12px] text-gray-300 mb-1 font-medium">Nationality</Label>
                 <Select
                     options={countriesOptions}
+                    value={countriesOptions.find((opt) => opt.value === nationality)}
                     onChange={handleNationalityChange}
-                    onInputChange={handleNationalityChange}
                     placeholder="Nationality"
                     isClearable
                     styles={customStyles}
@@ -137,6 +259,7 @@ export default function EditUserForm() {
             <SelectField
                 name={"gender"}
                 label={"Gender"}
+                defaultValue={user?.gender}
                 options={[
                     { value: "male", label: "Male" },
                     { value: "femal", label: "Femal" }]}
@@ -177,7 +300,7 @@ export default function EditUserForm() {
             <InputField
                 label={"X"}
                 name={"twitter"}
-                placeholder={"ex: jospinndagano1"}
+                placeholder={"ex: jospinndagano"}
                 register={register}
                 errors={errors}
             />
@@ -201,8 +324,8 @@ export default function EditUserForm() {
             <InputField
                 label={"available"}
                 name={"available"}
+                placeholder={"ex: 2023-10-10"}
                 type="date"
-                placeholder={""}
                 register={register}
                 errors={errors}
             />
@@ -228,7 +351,7 @@ export default function EditUserForm() {
                 errors={errors}
             />
             <div className="flex justify-end my-4">
-                <Button type="submit">Edit my profil</Button>
+                <Button type="submit">{isSubmitting ? "Loading..." : "Edit my profil"}</Button>
             </div>
         </form>
     );
