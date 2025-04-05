@@ -4,7 +4,7 @@ import prisma from "../../../../../prisma/prisma"
 export async function GET(req: Request) {
     const url = new URL(req.url)
     const id = url.pathname.split('/').pop() as string
-    const job_category = await prisma.job_category.findUnique({
+    const job_category = await prisma.jobCategory.findUnique({
         where: {id,}
     })
     if (!job_category) {
@@ -17,7 +17,7 @@ export async function PUT(req: Request) {
     const url = new URL(req.url)
     const id = url.pathname.split('/').pop() as string
     const {} = await req.json()
-    const job_category = await prisma.job_category.update({
+    const job_category = await prisma.jobCategory.update({
         where: {id,},
         data: {}
     })
@@ -27,5 +27,5 @@ export async function PUT(req: Request) {
 export async function DELETE(req: Request) {
     const url = new URL(req.url)
     const id = url.pathname.split('/').pop() as string
-    await prisma.job_category.delete({where: {id,}})
+    await prisma.jobCategory.delete({where: {id,}})
 }

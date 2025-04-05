@@ -2,30 +2,33 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { Button } from "../ui/button";
 import { InputField } from "../ui/InputField";
 import { RichTextField } from "../ui/RichTextField";
 import { SelectField } from "../ui/selectField";
-import { customStyles } from "@/lib/utils";
+import { customStyles, transformStringToArray } from "@/lib/utils";
 import { X } from "lucide-react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import { createJob } from "@/redux/job/jobSlice";
+import { fetchJobCategories, getJobCategory, selectJobCategories, selectJobCategory } from "@/redux/jobCategory/jobCategorySlice";
+import { fetchEmployementTypes, selectEmployementTypes } from "@/redux/employementType/employementTypeSlice";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 const Select = dynamic(() => import("react-select"), { ssr: false });
 
 const jobSchema = z.object({
     position: z.string().min(3, "Title must be at least 3 characters"),
-    companyName: z.string().optional(),
+    companyName: z.string(),
     description: z.string().min(10, "Description must be at least 10 characters"),
     jobCategoryId: z.string().optional(),
     employementTypeId: z.string().min(1, "Employment Type is required"),
     primaryTag: z.string().optional(),
     tags: z.string().optional(),
     jobRestricted: z.string().optional(),
-    remote: z.string().optional(),
+    remote: z.string(),
     companyLogo: z.instanceof(File).optional(),
     howToApply: z.string().optional(),
     salaryRange: z.string().optional(),
@@ -36,6 +39,16 @@ type JobFormValues = z.infer<typeof jobSchema>;
 
 export default function JobForm() {
     const dispatch = useDispatch<AppDispatch>()
+    const jobCategories = useSelector(selectJobCategories)
+    const jobCategoryId = useSelector(selectJobCategory)
+    const employementTypes = useSelector(selectEmployementTypes)
+    const currentUser = useCurrentUser()
+    const [activeField, setActiveField] = useState<"website" | "email">("website");
+    useEffect(() => {
+        dispatch(fetchJobCategories())
+        dispatch(fetchEmployementTypes())
+    }, [dispatch])
+
     const {
         register,
         control,
@@ -47,17 +60,7 @@ export default function JobForm() {
         resolver: zodResolver(jobSchema),
     });
 
-    const availableTags = [
-        'React',
-        'JavaScript',
-        'CSS',
-        'HTML',
-        'Node.js',
-        'Python',
-        'Java',
-        'C++',
-        'Ruby'
-    ];
+    const availableTags = jobCategoryId ? transformStringToArray(jobCategoryId.tags!) : [];
 
     const locations = [
         'RDCongo',
@@ -71,8 +74,9 @@ export default function JobForm() {
         'Argentine',
         'Chine'
     ];
-    const [tags, setTags] = useState<string[]>([]);
-    const [restrictions, setRestrictions] = useState<string[]>([]);
+    const [tags, setTags] = useState<string[]>([availableTags && availableTags[0]].filter(Boolean));
+    const [restrictions, setRestrictions] = useState<string[]>(["worldwide"]);
+    const [logoPreview, setLogoPreview] = useState<string | null>(null);
 
     const tagOptions = availableTags.map((tag) => ({
         label: `${tag}`,
@@ -106,27 +110,42 @@ export default function JobForm() {
         setRestrictions([...newRestrictions])
     }
 
+    const handleJobCategoryIdChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const selectedValue = event.target.value;
+        dispatch(getJobCategory(selectedValue))
+    };
+
+    useEffect(() => {
+        return () => {
+            if (logoPreview) {
+                URL.revokeObjectURL(logoPreview);
+            }
+        };
+    }, [logoPreview]);
+
     const onSubmit = (data: JobFormValues) => {
         const formData = new FormData();
         formData.append("position", data.position);
-        if (data.companyName) formData.append("companyName", data.companyName);
+        formData.append("companyName", data.companyName);
         formData.append("description", data.description);
         if (data.jobCategoryId) formData.append("jobCategoryId", data.jobCategoryId);
-        formData.append("employementTypeId", data.employementTypeId);
         if (data.primaryTag) formData.append("primaryTag", data.primaryTag);
-        if (data.tags) formData.append("tags", data.tags);
-        if (data.jobRestricted) formData.append("jobRestricted", data.jobRestricted);
-        if (data.remote) formData.append("remote", data.remote);
+        formData.append("tags", JSON.stringify(tags));
+        formData.append("jobRestricted", JSON.stringify(restrictions));
+        if (currentUser) formData.append("userId", currentUser.id!);
+        if (data.employementTypeId) formData.append("employementTypeId", data.employementTypeId);
+        formData.append("remote", data.remote);
         if (data.howToApply) formData.append("howToApply", data.howToApply);
         if (data.salaryRange) formData.append("salaryRange", data.salaryRange);
-        if (data.website) formData.append("howToApply", data.website);
+        if (data.website) formData.append("website", data.website);
 
         if (data.companyLogo) {
             formData.append("companyLogo", data.companyLogo);
-          } else {
+        } else {
             console.error("Aucun fichier sélectionné !");
-          }
+        }
         dispatch(createJob(formData))
+        reset()
     };
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="">
@@ -152,9 +171,10 @@ export default function JobForm() {
                 <SelectField
                     name={"jobCategoryId"}
                     label={"Job Sector"}
+                    onChange={handleJobCategoryIdChange}
                     options={[
-                        { value: "Technologie", label: "Technologie" },
-                        { value: "Economie", label: "Economie" }]}
+                        ...jobCategories.map(jobCateg => ({ value: jobCateg.id!, label: jobCateg.title }))
+                    ]}
                     register={register}
                     errors={errors}
                 />
@@ -163,8 +183,8 @@ export default function JobForm() {
                     name={"employementType"}
                     label={"Employement Type"}
                     options={[
-                        { value: "Full time", label: "Full time" },
-                        { value: "Part time", label: "Part time" }]}
+                        ...employementTypes.map(emp => ({ value: emp.id!, label: emp.title })),
+                    ]}
                     register={register}
                     errors={errors}
                 />
@@ -173,8 +193,8 @@ export default function JobForm() {
                     name={"primaryTag"}
                     label={"Primary tag"}
                     options={[
-                        { value: "Full time", label: "Full time" },
-                        { value: "Part time", label: "Part time" }]}
+                        ...availableTags.map(tag => ({ value: tag, label: tag })),
+                    ]}
                     register={register}
                     errors={errors}
                 />
@@ -237,20 +257,36 @@ export default function JobForm() {
 
             <div className="border border-gray-700 p-3 rounded-2xl mt-4">
                 <h1 className="text-center text-[14px] text-gray-300">JOB DETAILS</h1>
-                <InputField
-                    label={"company logo"}
-                    type="file"
-                    name={"companyLogo"}
-                    onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          setValue("companyLogo", file);
-                        }
-                      }}
-                    placeholder={"Company logo"}
-                    register={register}
-                    errors={errors}
-                />
+
+
+                <div className="flex items-center">
+                    <div className="mr-4">
+                        <InputField
+                            label={"Company Logo"}
+                            type="file"
+                            name={"companyLogo"}
+                            onChange={(e) => {
+                                const file = e.target.files?.[0];
+                                if (file) {
+                                    setValue("companyLogo", file);
+
+                                    // Créer une URL temporaire pour l’aperçu
+                                    const previewUrl = URL.createObjectURL(file);
+                                    setLogoPreview(previewUrl);
+                                }
+                            }}
+                            placeholder={"Company logo"}
+                            register={register}
+                            errors={errors}
+                        />
+                    </div>
+
+                    {logoPreview && (
+                        <div className="w-[100px] h-[100px] rounded overflow-hidden">
+                            <img src={logoPreview} alt="Preview" className="object-cover w-full h-full" />
+                        </div>
+                    )}
+                </div>
 
                 <RichTextField label={"how to apply"} control={control} name="howToApply" />
                 <InputField
@@ -261,25 +297,47 @@ export default function JobForm() {
                     errors={errors}
                 />
 
-                <InputField
-                    label={"website"}
-                    name={"website"}
-                    placeholder={"https://"}
-                    register={register}
-                    errors={errors}
-                />
+                <div className="space-y-4">
+                    {activeField === "website" ? (
+                        <InputField
+                            label="Website"
+                            name="website"
+                            placeholder="https://"
+                            register={register}
+                            errors={errors}
+                            onClick={() => setActiveField("email")}
+                        />
+                    ) : (
+                        <InputField
+                            label="Apply Email"
+                            name="website"
+                            placeholder="you@example.com"
+                            register={register}
+                            errors={errors}
+                            onClick={() => setActiveField("website")}
+                        />
+                    )}
 
-                <div className="text-center text-sm text-gray-300">
-                    -- Or --
+                    <div className="text-center text-sm text-gray-300">-- Or --</div>
+
+                    {activeField !== "website" ? (
+                        <button
+                            type="button"
+                            className="text-blue-500 underline text-sm"
+                            onClick={() => setActiveField("website")}
+                        >
+                            Use website instead
+                        </button>
+                    ) : (
+                        <button
+                            type="button"
+                            className="text-blue-500 underline text-sm"
+                            onClick={() => setActiveField("email")}
+                        >
+                            Use email instead
+                        </button>
+                    )}
                 </div>
-
-                <InputField
-                    label={"apply email"}
-                    name={"website"}
-                    placeholder={"https://"}
-                    register={register}
-                    errors={errors}
-                />
             </div>
 
             <div className="flex justify-end my-4">

@@ -24,3 +24,10 @@ export const customStyles = {
     color: state.isSelected ? 'white' : 'black',
   }),
 };
+
+export const transformStringToArray = (input: string): string[] => {
+  return input
+    .split(",")               
+    .map(item => item.trim())
+    .filter(item => item !== "");
+};
