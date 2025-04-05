@@ -1,12 +1,16 @@
+"use client";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { InputField } from "../ui/InputField";
 import { TextAreaField } from "../ui/textAreaField";
 import { Button } from "../ui/button";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/redux/store";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { createUserEducation } from "@/redux/user/userSlice";
 
 const userActivitySchema = z.object({
-    type: z.enum(["EXPERIENCE", "EDUCATION", "SIDE_PROJECT"]),
     yearStart: z.string().optional(),
     yearEnd: z.string().optional(),
     title: z.string().optional(),
@@ -14,22 +18,31 @@ const userActivitySchema = z.object({
     url: z.string().url("Invalid URL").optional(),
     email: z.string().email("Invalid email format").optional(),
     description: z.string().optional(),
-    userId: z.string(),
 });
 
 type UserActivityFormValues = z.infer<typeof userActivitySchema>;
 
 export default function EducationForm() {
+    const dispatch = useDispatch<AppDispatch>()
+    const user = useCurrentUser()
     const {
         register,
         handleSubmit,
+        reset,
         formState: { errors },
     } = useForm<UserActivityFormValues>({
         resolver: zodResolver(userActivitySchema),
     });
 
     const onSubmit = (data: UserActivityFormValues) => {
-        console.log(data);
+        if (user) {
+            dispatch(createUserEducation({
+                type: "EDUCATION",
+                userId: user.id ?? "",
+                ...data,
+            }))
+            reset()
+        }
     };
 
     return (
@@ -55,7 +68,7 @@ export default function EducationForm() {
                 </div>
             </div>
             <div className="grid grid-cols-6 gap-4">
-            <div className="col-span-3">
+                <div className="col-span-3">
                     <InputField
                         label={"School"}
                         name={"title"}

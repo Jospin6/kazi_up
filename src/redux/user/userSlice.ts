@@ -2,6 +2,20 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { RootState } from "../store";
 
+
+interface UserActivity {
+    id?: string
+    type: string
+    userId: string
+    yearStart?: string
+    yearEnd?: string
+    company?: string
+    title?: string
+    url?: string
+    email?: string
+    description?: string
+}
+
 interface User {
     id: string;
     username: string;
@@ -66,6 +80,21 @@ export const deleteUser = createAsyncThunk("users/deleteUser", async (id: string
     await axios.delete(`/api/users/${id}`);
     return id;
 });
+
+export const createUserExperience = createAsyncThunk("users/createUserExperience", async (data: UserActivity) => {
+    const response = await axios.post("/api/user-activities", data)
+    return response.data
+})
+
+export const createUserProject = createAsyncThunk("users/createUserProject", async (data: UserActivity) => {
+    const response = await axios.post("/api/user-activities", data)
+    return response.data
+})
+
+export const createUserEducation = createAsyncThunk("users/createUserEducation", async (data: UserActivity) => {
+    const response = await axios.post("/api/user-activities", data)
+    return response.data
+})
 
 const userSlice = createSlice({
     name: "users",
