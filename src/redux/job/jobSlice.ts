@@ -40,7 +40,7 @@ export const fetchJobs = createAsyncThunk("jobs/fetchJobs", async () => {
     return response.data;
 });
 
-export const getJob = createAsyncThunk("jobs/getJob", async (id: string) => {
+export const getJob = createAsyncThunk("jobs/getJob", async (id: any) => {
     const response = await axios.get(`/api/jobs/${id}`);
     return response.data;
 })

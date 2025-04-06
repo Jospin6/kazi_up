@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 import { AvatarImage } from "@radix-ui/react-avatar"
 import { formatRelativeTime, parseStringArray } from "@/lib/utils"
 import { SubItem } from "./subItem"
+import Link from "next/link"
 
 export const MainCard = ({ job }: { job: Job }) => {
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -23,7 +24,7 @@ export const MainCard = ({ job }: { job: Job }) => {
             </Avatar>
             <div className="ml-4 w-full">
                 <div className="flex items-center justify-between">
-                    <h1 className="text-gray-200 text-xl font-semibold"> {job.position} </h1>
+                    <h1 className="text-gray-200 text-xl font-semibold"><Link href={`/jobs/${job.id!}`}>{job.position}</Link></h1>
                     <div>
                         <span className="text-gray-400">{formatRelativeTime(job.createdAt!)}</span>
                         <Button className="ml-4">Apply the job</Button>
