@@ -73,3 +73,21 @@ export function parseStringArray(input: string): string[] {
   }
 }
 
+export const transformStringTagsToArray = (input: string): string[] => {
+  if (!input) return []
+
+  // Cas où c'est une string JSON comme '["react","next"]'
+  if (input.trim().startsWith("[") && input.trim().endsWith("]")) {
+    try {
+      const parsed = JSON.parse(input)
+      return Array.isArray(parsed) ? parsed.map(item => item.trim()) : []
+    } catch (err) {
+      // fallback au split
+    }
+  }
+
+  // Sinon on split à la main
+  return input.split(",").map(tag => tag.trim().replace(/^"|"$/g, ""))
+}
+
+
