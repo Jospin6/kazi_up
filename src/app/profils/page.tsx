@@ -1,6 +1,6 @@
 "use client"
 import { fetchJobs, selectJobs } from "@/redux/job/jobSlice";
-import { AppDispatch } from "@/redux/store";
+import { AppDispatch, RootState } from "@/redux/store";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,7 @@ import { fetchJobCategories, selectJobCategories } from "@/redux/jobCategory/job
 import { parseStringArray, transformStringTagsToArray, transformStringToArray } from "@/lib/utils";
 import { SubItem } from "@/components/ui/subItem";
 import { ProfilItem } from "@/components/ui/profilItem";
+import { fetchUsers } from "@/redux/user/userSlice";
 
 export default function Profils() {
     const dispatch = useDispatch<AppDispatch>()
@@ -25,6 +26,7 @@ export default function Profils() {
     const [selectedTags, setSelectedTags] = useState<string>("")
     const [filteredTags, setFilteredTags] = useState<string[]>([])
     const [filteredLocations, setFilteredLocations] = useState<string[]>([])
+    const { loading, users } = useSelector((state: RootState) => state.user)
 
     const [filteredExperiences, setFilteredExperiences] = useState<string[]>([])
     const [filteredDate, setFilteredDate] = useState<string>("")
@@ -49,6 +51,7 @@ export default function Profils() {
     useEffect(() => {
         dispatch(fetchJobs())
         dispatch(fetchJobCategories())
+        dispatch(fetchUsers())
     }, [dispatch])
 
     const filteredHistory = searchHistory.filter(item =>
@@ -166,10 +169,7 @@ export default function Profils() {
                         {/* <span className="text-sm text-gray-300">{visibleJobs.length} Jobs</span> */}
                     </div>
                     <div className="grid grid-cols-8 gap-4 pb-16">
-                        <ProfilItem className="col-span-2"/>
-                        <ProfilItem className="col-span-2"/>
-                        <ProfilItem className="col-span-2"/>
-                        <ProfilItem className="col-span-2"/>
+                        {users.map(user => (<ProfilItem user={user} className="col-span-2" />))}
                     </div>
                 </div>
             </div>
