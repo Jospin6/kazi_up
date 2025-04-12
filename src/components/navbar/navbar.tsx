@@ -14,6 +14,7 @@ export const Navbar = () => {
         <div className="pr-[50px] w-[20%] flex justify-end items-center">
             <Link href={"/jobs/new"} className="text-gray-100 text-[16px] mr-4 underline">Post a job</Link>
             <Link href={"/admin"} className="text-gray-100 text-[16px] mr-4 underline">Admin</Link>
+            <Link href={"/profils"} className="text-gray-100 text-[16px] mr-4 underline">Employers</Link>
             {!user
                 ? (<Link href={"/login"}><Button>Login</Button></Link>)
                 : (
