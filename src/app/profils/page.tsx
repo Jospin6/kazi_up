@@ -196,7 +196,7 @@ export default function Profils() {
                                 className="text-gray-300 cursor-pointer"
                             />
                         ))}
-                    {filteredUsers.length > 0 && (<SubItem
+                    {(filteredUsers.length > 0 && selectedTTags.length > 0 || filteredLocations.length > 0 ) && (<SubItem
                         title={`Clear ${filteredUsers.length} tags`}
                         mainClick={removeFilteredUsers}
                         isRemovable
