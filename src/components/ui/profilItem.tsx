@@ -27,7 +27,7 @@ export const ProfilItem = ({ className, user }: { className: string, user: User 
                 {user.bio && `${user.bio?.slice(0, 100)}...`}
             </p>
             <div className="flex flex-wrap text-gray-300">
-                {user.skills && transformStringToArray(user.skills).map(skill => <SubItem title={skill} />)}
+                {user.skills && transformStringToArray(user.skills).map((skill, i) => <SubItem key={i} title={skill} />)}
             </div>
         </div>
         <div className="absolute bottom-1 left-2 right-2 h-[35px]">

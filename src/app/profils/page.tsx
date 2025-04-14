@@ -16,6 +16,8 @@ import { parseStringArray, transformStringTagsToArray, transformStringToArray } 
 import { SubItem } from "@/components/ui/subItem";
 import { ProfilItem } from "@/components/ui/profilItem";
 import { fetchUsers } from "@/redux/user/userSlice";
+import { Combobox } from "@/components/ui/combobox";
+import { set } from "react-hook-form";
 
 export default function Profils() {
     const dispatch = useDispatch<AppDispatch>()
@@ -27,11 +29,12 @@ export default function Profils() {
     const [filteredTags, setFilteredTags] = useState<string[]>([])
     const [filteredLocations, setFilteredLocations] = useState<string[]>([])
     const { loading, users } = useSelector((state: RootState) => state.user)
-
-    const [filteredExperiences, setFilteredExperiences] = useState<string[]>([])
-    const [filteredDate, setFilteredDate] = useState<string>("")
-    const [filteredRemotes, setFilteredRemotes] = useState<string[]>([])
-
+    const [selectedTTags, setSelectedTTags] = useState<string[]>([])
+    const toggleTag = (tag: string) => {
+        setSelectedTTags((prev) =>
+            prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+        )
+    }
     const searchHistory = jobCategories.map(cat => cat.title)
 
     const tags = transformStringToArray(selectedTags)
@@ -69,30 +72,50 @@ export default function Profils() {
         }
     }
 
-    const removeItem = (i: any) => {
-        let newTags = filteredTags.filter((_, index) => index !== i)
-        setFilteredTags([...newTags])
-    }
-    const removeLocation = (i: any) => {
-        let newLocations = filteredLocations.filter((_, index) => index !== i)
+    const filteredUsers = users.filter((user) => {
+        const userSkills = transformStringToArray(user.skills || "").map((s) => s.toLowerCase())
+        const userLocation = user.location?.toLowerCase()
+      
+        // ✅ Filtrage par location
+        const locationMatches =
+          filteredLocations.length === 0 ||
+          filteredLocations.map(loc => loc.toLowerCase()).includes(userLocation || "")
+      
+        if (!locationMatches) return false // ❌ user filtré par location
+      
+        // ✅ Cas 1 : aucun tag global → retourner tous les users
+        if (!tags || tags.length === 0) {
+          return true
+        }
+      
+        // ✅ Cas 2 : aucun tag sélectionné → users avec AU MOINS 1 tag dans "tags"
+        if (selectedTags.length === 0) {
+          return tags.some(tag => userSkills.includes(tag.toLowerCase()))
+        }
+      
+        // ✅ Cas 3 : tags sélectionnés → users avec TOUS les selectedTags
+        return selectedTTags.every(tag => userSkills.includes(tag.toLowerCase()))
+      })
+      
+
+    const removeLocation = (value: string) => {
+        let newLocations = filteredLocations.filter((val) => val !== value)
         setFilteredLocations([...newLocations])
     }
 
-    const removeExperience = (i: any) => {
-        let newExperiences = filteredExperiences.filter((_, index) => index !== i)
-        setFilteredExperiences([...newExperiences])
+    const removeFilteredUsers = () => {
+        setSelectedTTags([])
+        setFilteredLocations([])
     }
-    const removeDate = () => {
-        setFilteredDate("")
-    }
-    const removeRemote = (i: any) => {
-        let newRemotes = filteredRemotes.filter((_, index) => index !== i)
-        setFilteredRemotes([...newRemotes])
-    }
-
 
     return (
         <div className="">
+            <div className="text-center">
+                <h1 className="text-6xl bg-gradient-to-r from-[#18CB96] to-gray-300 bg-clip-text text-transparent font-bold">
+                    Find Your Dream Job in Minutes
+                </h1>
+                <h4 className="text-2xl text-gray-300 mt-3">Speed up your job search and land your ideal role</h4>
+            </div>
             <div className="w-8/12 m-auto">
                 <div className="flex justify-center mt-6 relative">
                     <div className="flex items-center h-[40px] rounded-2xl border relative bg-[#1f1f1f]">
@@ -103,7 +126,7 @@ export default function Profils() {
                             onChange={(e) => setSearchTerm(e.target.value)}
                             value={searchTerm}
                             onFocus={() => setIsOpen(true)}
-                            onBlur={() => setTimeout(() => setIsOpen(false), 200)} // délai pour laisser le temps de cliquer
+                            onBlur={() => setTimeout(() => setIsOpen(false), 200)}
                         />
                     </div>
 
@@ -127,40 +150,55 @@ export default function Profils() {
                         </div>
                     )}
                 </div>
-                <div className="flex justify-center text-gray-200 mt-6">
-                    <DropdownMenu>
-                        <DropdownMenuTrigger className="mr-4 border px-2 py-[2px] rounded-lg flex items-center">
-                            <span>Add skills you're hiring</span>
-                            <ArrowDown size={12} className="ml-3" />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                            {tags.map(tag => (
-                                <DropdownMenuItem key={tag} onClick={() => setFilteredTags([...filteredTags, tag])}>
-                                    {tag}
-                                </DropdownMenuItem>))}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                <div className="flex justify-between text-gray-200 mt-6">
+                    <Combobox
+                        placeholder="Add skills you're hiring"
+                        items={[...tags.map(tag => ({ value: tag, label: tag }))]} onSelectItem={(value) => {
+                            setSelectedTTags([...selectedTTags, value])
+                        }} />
 
-                    <DropdownMenu>
-                        <DropdownMenuTrigger className="mr-4 border px-2 py-[2px] rounded-lg flex items-center">
-                            <span>Location</span>
-                            <ArrowDown size={12} className="ml-3" />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                            {locationsArray.map(location => (
-                                <DropdownMenuItem key={location} onClick={() => setFilteredLocations([...filteredLocations, location])}>
-                                    {location}
-                                </DropdownMenuItem>))}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                    <Combobox
+                        placeholder="Locations"
+                        items={[...locationsArray.map(location => ({ value: location, label: location }))]} onSelectItem={(value) => {
+                            setFilteredLocations([...filteredLocations, value])
+                        }} />
 
                 </div>
                 <div className="w-full flex flex-wrap h-auto mt-4">
-                    {filteredTags.map((tag, i) => (<SubItem key={tag} title={tag} onClick={() => removeItem(i)} isRemovable className="text-gray-300" />))}
-                    {filteredLocations.map((loc, i) => (<SubItem key={loc} title={loc} onClick={() => removeLocation(i)} isRemovable className="text-gray-300" />))}
-                    {filteredExperiences.map((exp, i) => (<SubItem key={exp} title={exp} onClick={() => removeExperience(i)} isRemovable className="text-gray-300" />))}
-                    {filteredRemotes.map((rm, i) => (<SubItem key={rm} title={rm} onClick={() => removeRemote(i)} isRemovable className="text-gray-300" />))}
-                    {filteredDate != "" && (<SubItem title={filteredDate} onClick={removeDate} isRemovable className="text-gray-300" />)}
+                    {selectedTTags.map(tag => (
+                        <SubItem
+                            key={tag}
+                            title={tag}
+                            isRemovable
+                            mainClick={() => toggleTag(tag)}
+                            className="text-gray-300 bg-black cursor-pointer"
+                        />
+                    ))}
+                    {filteredLocations.map(loc => (
+                        <SubItem
+                            key={loc}
+                            title={loc}
+                            mainClick={() => removeLocation(loc)}
+                            isRemovable
+                            className="text-gray-300 bg-black cursor-pointer"
+                        />
+                    ))}
+                    {tags
+                        .filter(tag => !selectedTTags.includes(tag))
+                        .map(tag => (
+                            <SubItem
+                                key={tag}
+                                title={tag}
+                                mainClick={() => toggleTag(tag)}
+                                className="text-gray-300 cursor-pointer"
+                            />
+                        ))}
+                    {filteredUsers.length > 0 && (<SubItem
+                        title={`Clear ${filteredUsers.length} tags`}
+                        mainClick={removeFilteredUsers}
+                        isRemovable
+                        className="border border-red-500 text-red-500 cursor-pointer"
+                    />)}
                 </div>
             </div>
             <div className="w-10/12 m-auto">
@@ -169,7 +207,7 @@ export default function Profils() {
                         {/* <span className="text-sm text-gray-300">{visibleJobs.length} Jobs</span> */}
                     </div>
                     <div className="grid grid-cols-8 gap-4 pb-16">
-                        {users.map(user => (<ProfilItem user={user} className="col-span-2" />))}
+                        {filteredUsers.map(user => (<ProfilItem user={user} key={user.id} className="col-span-2" />))}
                     </div>
                 </div>
             </div>
