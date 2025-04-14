@@ -6,6 +6,7 @@ import { Button } from "../ui/button";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import { createEmployementTypes } from "@/redux/employementType/employementTypeSlice";
+import { useTranslation } from 'react-i18next'
 
 const employmentTypeSchema = z.object({
     title: z.string().min(3, "Title must be at least 3 characters"),
@@ -14,6 +15,7 @@ const employmentTypeSchema = z.object({
 type EmploymentTypeFormValues = z.infer<typeof employmentTypeSchema>;
 
 export function EmploymentTypeForm() {
+    const { t } = useTranslation()
     const dispatch = useDispatch<AppDispatch>()
     const {
         register,
@@ -32,9 +34,9 @@ export function EmploymentTypeForm() {
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="border border-gray-700 p-3 rounded-2xl">
             <InputField
-                label={"Title"}
+                label={t("title")}
                 name={"title"}
-                placeholder={"Title"}
+                placeholder={t("title")}
                 register={register}
                 errors={errors}
             />

@@ -7,6 +7,7 @@ import { Button } from "../ui/button";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import { createJobCategory } from "@/redux/jobCategory/jobCategorySlice";
+import { useTranslation } from 'react-i18next'
  
 const jobCategorySchema = z.object({
     title: z.string().min(3, "Title must be at least 3 characters"),
@@ -16,6 +17,7 @@ const jobCategorySchema = z.object({
 type JobCategoryFormValues = z.infer<typeof jobCategorySchema>;
 
 export default function JobCategoryForm() {
+    const { t } = useTranslation()
     const dispatch = useDispatch<AppDispatch>()
     const {
         register,
@@ -34,21 +36,21 @@ export default function JobCategoryForm() {
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="border border-gray-700 p-3 rounded-2xl">
             <InputField
-                label={"Title"}
+                label={t("title")}
                 name={"title"}
-                placeholder={"Title"}
+                placeholder={t("title")}
                 register={register}
                 errors={errors}
             />
             <TextAreaField
-                label={"tags"}
+                label={t("tags")}
                 name={"tags"}
-                placeholder={"Tags"}
+                placeholder={t("tags")}
                 register={register}
                 errors={errors} />
 
             <div className="flex justify-end my-4">
-                <Button type="submit">{isSubmitting ? "Loading..." : "Add category"}</Button>
+                <Button type="submit">{isSubmitting ? "Loading..." : t("addCategory")}</Button>
             </div>
         </form>
     );

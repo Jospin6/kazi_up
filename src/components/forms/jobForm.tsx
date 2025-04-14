@@ -16,6 +16,7 @@ import { createJob } from "@/redux/job/jobSlice";
 import { fetchJobCategories, getJobCategory, selectJobCategories, selectJobCategory } from "@/redux/jobCategory/jobCategorySlice";
 import { fetchEmployementTypes, selectEmployementTypes } from "@/redux/employementType/employementTypeSlice";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
+import { useTranslation } from 'react-i18next'
 
 const Select = dynamic(() => import("react-select"), { ssr: false });
 
@@ -38,6 +39,7 @@ const jobSchema = z.object({
 type JobFormValues = z.infer<typeof jobSchema>;
 
 export default function JobForm() {
+    const { t } = useTranslation()
     const dispatch = useDispatch<AppDispatch>()
     const jobCategories = useSelector(selectJobCategories)
     const jobCategoryId = useSelector(selectJobCategory)
@@ -152,26 +154,26 @@ export default function JobForm() {
         <form onSubmit={handleSubmit(onSubmit)} className="">
             <div className="border border-gray-700 p-3 rounded-2xl">
                 <InputField
-                    label={"Job position"}
+                    label={t("jobPosition")}
                     name={"position"}
-                    placeholder={"Position"}
+                    placeholder={t("jobPosition")}
                     register={register}
                     errors={errors}
                 />
 
                 <InputField
-                    label={"company name"}
+                    label={t("companyName")}
                     name={"companyName"}
-                    placeholder={"Company name"}
+                    placeholder={t("companyName")}
                     register={register}
                     errors={errors}
                 />
 
-                <RichTextField label={"Description"} control={control} name="description" />
+                <RichTextField label={t("description")} control={control} name="description" />
 
                 <SelectField
                     name={"jobCategoryId"}
-                    label={"Job Sector"}
+                    label={t("jobSector")}
                     onChange={handleJobCategoryIdChange}
                     options={[
                         ...jobCategories.map(jobCateg => ({ value: jobCateg.id!, label: jobCateg.title }))
@@ -182,7 +184,7 @@ export default function JobForm() {
 
                 <SelectField
                     name={"employementTypeId"}
-                    label={"Employement Type"}
+                    label={t("employementType")}
                     options={[
                         ...employementTypes.map(emp => ({ value: emp.id!, label: emp.title })),
                     ]}
@@ -192,7 +194,7 @@ export default function JobForm() {
 
                 <SelectField
                     name={"primaryTag"}
-                    label={"Primary tag"}
+                    label={t("primaryTags")}
                     options={[
                         ...availableTags.map(tag => ({ value: tag, label: tag })),
                     ]}
@@ -202,7 +204,7 @@ export default function JobForm() {
 
                 <div className="text-gray-300 mb-4">
 
-                    <label className="block text-sm mb-2 font-medium">{"Keywords, tags".toLocaleUpperCase()}</label>
+                    <label className="block text-sm mb-2 font-medium">{`${t("keywords")}, ${t("tags")}`.toLocaleUpperCase()}</label>
                     <div className="flex flex-wrap">
                         {
                             tags.map((tag, i) => (
@@ -216,7 +218,7 @@ export default function JobForm() {
                         options={tagOptions}
                         onChange={handleChange}
                         onInputChange={handleChange}
-                        placeholder="choose tags"
+                        placeholder={t("chooseTag")}
                         isClearable
                         styles={customStyles}
                     />
@@ -237,7 +239,7 @@ export default function JobForm() {
                         options={restrictionsOptions}
                         onChange={handleChangeRestrictions}
                         onInputChange={handleChangeRestrictions}
-                        placeholder="choose location"
+                        placeholder={t("chooseLocation")}
                         isClearable
                         styles={customStyles}
                     />
@@ -245,7 +247,7 @@ export default function JobForm() {
 
                 <SelectField
                     name={"remote"}
-                    label={"Remote"}
+                    label={t("remote")}
                     options={[
                         { value: "onsite", label: "Onsite" },
                         { value: "hybrid", label: "Hybrid" },
@@ -257,13 +259,13 @@ export default function JobForm() {
 
 
             <div className="border border-gray-700 p-3 rounded-2xl mt-4">
-                <h1 className="text-center text-[14px] text-gray-300">JOB DETAILS</h1>
+                <h1 className="text-center text-[14px] text-gray-300">{t("jobDetails")}</h1>
 
 
                 <div className="flex items-center">
                     <div className="mr-4">
                         <InputField
-                            label={"Company Logo"}
+                            label={t("companyLogo")}
                             type="file"
                             name={"companyLogo"}
                             onChange={(e) => {
@@ -276,7 +278,7 @@ export default function JobForm() {
                                     setLogoPreview(previewUrl);
                                 }
                             }}
-                            placeholder={"Company logo"}
+                            placeholder={t("companyLogo")}
                             register={register}
                             errors={errors}
                         />
@@ -289,9 +291,9 @@ export default function JobForm() {
                     )}
                 </div>
 
-                <RichTextField label={"how to apply"} control={control} name="howToApply" />
+                <RichTextField label={t("howToApply")} control={control} name="howToApply" />
                 <InputField
-                    label={"salary"}
+                    label={t("salaryRange")}
                     name={"salaryRange"}
                     placeholder={"Salary range"}
                     register={register}
@@ -301,7 +303,7 @@ export default function JobForm() {
                 <div className="space-y-4">
                     {activeField === "website" ? (
                         <InputField
-                            label="Website"
+                            label={t("website")}
                             name="website"
                             placeholder="https://"
                             register={register}
@@ -310,7 +312,7 @@ export default function JobForm() {
                         />
                     ) : (
                         <InputField
-                            label="Apply Email"
+                            label={t("applyEmail")}
                             name="website"
                             placeholder="you@example.com"
                             register={register}
@@ -327,7 +329,7 @@ export default function JobForm() {
                             className="text-blue-500 underline text-sm"
                             onClick={() => setActiveField("website")}
                         >
-                            Use website instead
+                            {t("usewebsite")}
                         </button>
                     ) : (
                         <button
@@ -335,7 +337,7 @@ export default function JobForm() {
                             className="text-blue-500 underline text-sm"
                             onClick={() => setActiveField("email")}
                         >
-                            Use email instead
+                            {t("usemail")}
                         </button>
                     )}
                 </div>
@@ -343,7 +345,7 @@ export default function JobForm() {
 
             <div className="flex justify-end my-4">
                 <Button type="submit">
-                    {isSubmitting ? "Loading..." : "Post the Job"}
+                    {isSubmitting ? "Loading..." : t("postTheJob")}
                 </Button>
             </div>
         </form>

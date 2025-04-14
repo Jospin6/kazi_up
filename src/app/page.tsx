@@ -14,8 +14,10 @@ import { MainCard } from "@/components/ui/mainCard";
 import { fetchJobCategories, selectJobCategories } from "@/redux/jobCategory/jobCategorySlice";
 import { parseStringArray, transformStringTagsToArray, transformStringToArray } from "@/lib/utils";
 import { SubItem } from "@/components/ui/subItem";
+import { useTranslation } from 'react-i18next'
 
 export default function Home() {
+  const { t } = useTranslation()
   const dispatch = useDispatch<AppDispatch>()
   const jobs = useSelector(selectJobs)
   const jobCategories = useSelector(selectJobCategories)
@@ -150,16 +152,18 @@ export default function Home() {
     <div className="">
       <div className="text-center">
         <h1 className="text-6xl bg-gradient-to-r from-[#18CB96] to-gray-300 bg-clip-text text-transparent font-bold">
-          Find Your Dream Job in Minutes
+        {t("bigTitle")}
         </h1>
-        <h4 className="text-2xl text-gray-300 mt-3">Speed up your job search and land your ideal role</h4>
+        <h4 className="text-2xl text-gray-300 mt-3">
+        {t("subBigTitle")}  
+        </h4>
       </div>
       <div className="w-8/12 m-auto">
         <div className="flex justify-center mt-6 relative">
           <div className="flex items-center h-[40px] rounded-2xl border relative bg-[#1f1f1f]">
             <Search size={25} className="text-gray-300 font-bold mx-[5px]" />
             <Input
-              placeholder="Keyword"
+              placeholder={t("searchSector")}
               className="w-[300px] border-none text-gray-100 bg-transparent focus:outline-none"
               onChange={(e) => setSearchTerm(e.target.value)}
               value={searchTerm}
@@ -182,7 +186,7 @@ export default function Home() {
                     </li>
                   ))
                 ) : (
-                  <li className="px-3 py-2 text-gray-400 italic">No results found</li>
+                  <li className="px-3 py-2 text-gray-400 italic">{t("noResultsFound")}</li>
                 )}
               </ul>
             </div>
@@ -191,7 +195,7 @@ export default function Home() {
         <div className="flex justify-center text-gray-200 mt-6">
           <DropdownMenu>
             <DropdownMenuTrigger className="mr-4 border px-2 py-[2px] rounded-lg flex items-center">
-              <span>Search</span>
+              <span>{t("search")}</span>
               <ArrowDown size={12} className="ml-3" />
             </DropdownMenuTrigger>
             <DropdownMenuContent>
@@ -206,7 +210,7 @@ export default function Home() {
 
           <DropdownMenu>
             <DropdownMenuTrigger className="mr-4 border px-2 py-[2px] rounded-lg flex items-center">
-              <span>Location</span>
+              <span>{t("location")}</span>
               <ArrowDown size={12} className="ml-3" />
             </DropdownMenuTrigger>
             <DropdownMenuContent>
@@ -219,7 +223,7 @@ export default function Home() {
 
           <DropdownMenu>
             <DropdownMenuTrigger className="mr-4 border px-2 py-[2px] rounded-lg flex items-center">
-              <span>Experience</span>
+              <span>{t("experience")}</span>
               <ArrowDown size={12} className="ml-3" />
             </DropdownMenuTrigger>
             <DropdownMenuContent>
@@ -232,7 +236,7 @@ export default function Home() {
 
           <DropdownMenu>
             <DropdownMenuTrigger className="mr-4 border px-2 py-[2px] rounded-lg flex items-center">
-              <span>Date posted</span>
+              <span>{t("postedDate")}</span>
               <ArrowDownIcon size={12} className="ml-3" />
             </DropdownMenuTrigger>
             <DropdownMenuContent>
@@ -253,7 +257,7 @@ export default function Home() {
           <div className="flex justify-between">
             <span className="text-sm text-gray-300">{visibleJobs.length} Jobs</span>
             <DropdownMenu>
-              <DropdownMenuTrigger className="mr-4 cursor-pointer text-gray-300 px-2 py-[2px] rounded-lg flex items-center">Remote</DropdownMenuTrigger>
+              <DropdownMenuTrigger className="mr-4 cursor-pointer text-gray-300 px-2 py-[2px] rounded-lg flex items-center">{t("remote")}</DropdownMenuTrigger>
               <DropdownMenuContent>
                 {remotes.map(rm => (
                   <DropdownMenuItem key={rm} onClick={() => setFilteredRemotes([...filteredRemotes, rm])}>{rm}</DropdownMenuItem>

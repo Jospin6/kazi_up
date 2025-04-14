@@ -5,9 +5,11 @@ import { SubItem } from "./subItem"
 import Image from "next/image"
 import { useEffect, useState } from "react"
 import { transformStringToArray } from "@/lib/utils"
+import { useTranslation } from 'react-i18next'
 
 export const ProfilItem = ({ className, user }: { className: string, user: User }) => {
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+    const { t } = useTranslation()
 
     useEffect(() => {
         if (user?.id) {
@@ -31,7 +33,7 @@ export const ProfilItem = ({ className, user }: { className: string, user: User 
             </div>
         </div>
         <div className="absolute bottom-1 left-2 right-2 h-[35px]">
-            <Button className="bg-green-700 h-[30px] rounded-2xl text-white w-full">Available Now</Button>
+            <Button className="bg-green-700 h-[30px] rounded-2xl text-white w-full">{t("avalaibleNow")}</Button>
         </div>
     </div>
 }

@@ -7,8 +7,10 @@ import { AvatarImage } from "@radix-ui/react-avatar"
 import { formatRelativeTime, parseStringArray } from "@/lib/utils"
 import { SubItem } from "./subItem"
 import Link from "next/link"
+import { useTranslation } from 'react-i18next'
 
 export const MainCard = ({ job }: { job: Job }) => {
+    const { t } = useTranslation()
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
     useEffect(() => {
@@ -27,7 +29,7 @@ export const MainCard = ({ job }: { job: Job }) => {
                     <h1 className="text-gray-200 text-xl font-semibold"><Link href={`/jobs/${job.id!}`}>{job.position}</Link></h1>
                     <div>
                         <span className="text-gray-400">{formatRelativeTime(job.createdAt!)}</span>
-                        <Button className="ml-4">Apply the job</Button>
+                        <Button className="ml-4">{t("apply")}</Button>
                     </div>
                 </div>
                 <div className="">

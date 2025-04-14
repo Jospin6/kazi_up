@@ -9,6 +9,7 @@ import { useDispatch } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { createUserEducation } from "@/redux/user/userSlice";
+import { useTranslation } from 'react-i18next'
 
 const userActivitySchema = z.object({
     yearStart: z.string().optional(),
@@ -23,6 +24,7 @@ const userActivitySchema = z.object({
 type UserActivityFormValues = z.infer<typeof userActivitySchema>;
 
 export default function EducationForm() {
+    const { t } = useTranslation()
     const dispatch = useDispatch<AppDispatch>()
     const user = useCurrentUser()
     const {
@@ -50,18 +52,18 @@ export default function EducationForm() {
             <div className="grid grid-cols-6 gap-4">
                 <div className="col-span-3">
                     <InputField
-                        label={"year start"}
+                        label={t("ystart")}
                         name={"yearStart"}
-                        placeholder={"Year start"}
+                        placeholder={t("ystart")}
                         register={register}
                         errors={errors}
                     />
                 </div>
                 <div className="col-span-3">
                     <InputField
-                        label={"year end"}
+                        label={t("yend")}
                         name={"yearEnd"}
-                        placeholder={"Year end"}
+                        placeholder={t("yend")}
                         register={register}
                         errors={errors}
                     />
@@ -70,18 +72,18 @@ export default function EducationForm() {
             <div className="grid grid-cols-6 gap-4">
                 <div className="col-span-3">
                     <InputField
-                        label={"School"}
+                        label={t("school")}
                         name={"title"}
-                        placeholder={"School"}
+                        placeholder={t("school")}
                         register={register}
                         errors={errors}
                     />
                 </div>
                 <div className="col-span-3">
                     <InputField
-                        label={"email"}
+                        label={t("email")}
                         name={"email"}
-                        placeholder={"Email"}
+                        placeholder={t("email")}
                         register={register}
                         errors={errors}
                     />
@@ -89,15 +91,15 @@ export default function EducationForm() {
             </div>
             <div>
                 <TextAreaField
-                    label={"description"}
+                    label={t("description")}
                     name={"description"}
-                    placeholder={"description"}
+                    placeholder={t("description")}
                     register={register}
                     errors={errors} />
             </div>
 
             <div className="flex justify-end my-4">
-                <Button type="submit">Save my Experience</Button>
+                <Button type="submit">{t("saveEducation")}</Button>
             </div>
         </form>
     );

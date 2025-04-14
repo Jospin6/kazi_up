@@ -13,6 +13,7 @@ import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import { getUser, selectUser, updateUser, User } from "@/redux/user/userSlice";
+import { useTranslation } from 'react-i18next'
 
 const Select = dynamic(() => import("react-select"), { ssr: false });
 
@@ -38,7 +39,8 @@ const userSchema = z.object({
 
 type UserFormValues = z.infer<typeof userSchema>;
 
-export default function EditUserForm({user}: {user: User}) {
+export default function EditUserForm({ user }: { user: User }) {
+    const { t } = useTranslation()
     const dispatch = useDispatch<AppDispatch>()
     const [logoPreview, setLogoPreview] = useState<string | null>(null);
     const [avatar, setAvatar] = useState<File | null>(null);
@@ -177,7 +179,7 @@ export default function EditUserForm({user}: {user: User}) {
             <div className="flex items-center">
                 <div className="mr-4">
                     <InputField
-                        label={"your avatar"}
+                        label={t("avatar")}
                         type="file"
                         name={"avatar"}
                         onChange={handleAvatarChange}
@@ -197,53 +199,59 @@ export default function EditUserForm({user}: {user: User}) {
                 )}
             </div>
             <InputField
-                label={"username"}
+                label={t("username")}
                 name={"username"}
-                placeholder={"Username"}
+                placeholder={t("username")}
                 register={register}
                 errors={errors}
             />
 
             <InputField
-                label={"email"}
+                label={t("email")}
                 type="email"
                 name={"email"}
-                placeholder={"Email"}
+                placeholder={t("email")}
                 register={register}
                 errors={errors}
             />
 
             <div className="mb-4">
-                <Label className="text-[12px] text-gray-300 mb-1 font-medium">Location</Label>
+                <Label className="text-[12px] text-gray-300 mb-1 font-medium">
+                    {t("location")}
+                </Label>
                 <Select
                     options={countriesOptions}
                     value={countriesOptions.find((opt) => opt.value === location)}
                     onChange={handleLocationChange}
-                    placeholder="Location"
+                    placeholder={t("location")}
                     isClearable
                     styles={customStyles}
                 />
             </div>
 
             <div className="mb-4">
-                <Label className="text-[12px] text-gray-300 mb-1 font-medium">Residency Country</Label>
+                <Label className="text-[12px] text-gray-300 mb-1 font-medium">
+                {t("residency")}
+                </Label>
                 <Select
                     options={countriesOptions}
                     onChange={handleResidencyCountryChange}
                     value={countriesOptions.find((opt) => opt.value === residencyCountry)}
-                    placeholder="Residency country"
+                    placeholder={t("residency")}
                     isClearable
                     styles={customStyles}
                 />
             </div>
 
             <div className="mb-4">
-                <Label className="text-[12px] text-gray-300 mb-1 font-medium">Nationality</Label>
+                <Label className="text-[12px] text-gray-300 mb-1 font-medium">
+                {t("nationality")}
+                </Label>
                 <Select
                     options={countriesOptions}
                     value={countriesOptions.find((opt) => opt.value === nationality)}
                     onChange={handleNationalityChange}
-                    placeholder="Nationality"
+                    placeholder={t("nationality")}
                     isClearable
                     styles={customStyles}
                 />
@@ -251,7 +259,7 @@ export default function EditUserForm({user}: {user: User}) {
 
             <SelectField
                 name={"gender"}
-                label={"Gender"}
+                label={t("gender")}
                 defaultValue={user?.gender}
                 options={[
                     { value: "male", label: "Male" },
@@ -261,21 +269,21 @@ export default function EditUserForm({user}: {user: User}) {
             />
 
             <TextAreaField
-                label={"Bio"}
+                label={t("bio")}
                 name={"bio"}
-                placeholder={"bio"}
+                placeholder={t("bio")}
                 register={register}
                 errors={errors} />
 
             <TextAreaField
-                label={"skills"}
+                label={t("skills")}
                 name={"skills"}
-                placeholder={"Skills"}
+                placeholder={t("skills")}
                 register={register}
                 errors={errors} />
 
             <InputField
-                label={"website"}
+                label={t("website")}
                 name={"website"}
                 placeholder={"https://"}
                 register={register}
@@ -283,7 +291,7 @@ export default function EditUserForm({user}: {user: User}) {
             />
 
             <InputField
-                label={"github"}
+                label={t("github")}
                 name={"github"}
                 placeholder={"ex: jospin6"}
                 register={register}
@@ -291,7 +299,7 @@ export default function EditUserForm({user}: {user: User}) {
             />
 
             <InputField
-                label={"X"}
+                label={t("x")}
                 name={"twitter"}
                 placeholder={"ex: jospinndagano"}
                 register={register}
@@ -299,7 +307,7 @@ export default function EditUserForm({user}: {user: User}) {
             />
 
             <InputField
-                label={"linkedin"}
+                label={t("linkedin")}
                 name={"linkedin"}
                 placeholder={"ex: jospin_ndagano"}
                 register={register}
@@ -307,7 +315,7 @@ export default function EditUserForm({user}: {user: User}) {
             />
 
             <InputField
-                label={"Languages"}
+                label={t("languages")}
                 name={"languages"}
                 placeholder={"ex: English, French"}
                 register={register}
@@ -315,7 +323,7 @@ export default function EditUserForm({user}: {user: User}) {
             />
 
             <InputField
-                label={"available"}
+                label={t("available")}
                 name={"available"}
                 placeholder={"ex: 2023-10-10"}
                 type="date"
@@ -323,28 +331,28 @@ export default function EditUserForm({user}: {user: User}) {
                 errors={errors}
             />
             <InputField
-                label={"timezone"}
+                label={t("timezone")}
                 name={"timezone"}
                 placeholder={"Ex: +1, +2, +4"}
                 register={register}
                 errors={errors}
             />
             <InputField
-                label={"annual pay"}
+                label={t("annualpay")}
                 name={"annualpay"}
                 placeholder={"Ex: 30000"}
                 register={register}
                 errors={errors}
             />
             <InputField
-                label={"hourly pay"}
+                label={t("hourlypay")}
                 name={"hourlypay"}
                 placeholder={"Ex: 15"}
                 register={register}
                 errors={errors}
             />
             <div className="flex justify-end my-4">
-                <Button type="submit">{isSubmitting ? "Loading..." : "Edit my profil"}</Button>
+                <Button type="submit">{isSubmitting ? "Loading..." : t("editProfil")}</Button>
             </div>
         </form>
     );
