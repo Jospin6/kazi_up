@@ -17,7 +17,7 @@ import { SubItem } from "@/components/ui/subItem";
 import { ProfilItem } from "@/components/ui/profilItem";
 import { fetchUsers } from "@/redux/user/userSlice";
 import { Combobox } from "@/components/ui/combobox";
-import { set } from "react-hook-form";
+import { useTranslation } from 'react-i18next'
 
 export default function Profils() {
     const dispatch = useDispatch<AppDispatch>()
@@ -107,12 +107,14 @@ export default function Profils() {
         setSelectedTTags([])
         setFilteredLocations([])
     }
+    const { t } = useTranslation()
 
     return (
         <div className="">
             <div className="text-center">
                 <h1 className="text-6xl bg-gradient-to-r from-[#18CB96] to-gray-300 bg-clip-text text-transparent font-bold">
-                    Find Your Dream Job in Minutes
+                    {/* Find Your Dream Job in Minutes */}
+                    {t("welcome")}
                 </h1>
                 <h4 className="text-2xl text-gray-300 mt-3">Speed up your job search and land your ideal role</h4>
             </div>

@@ -1,18 +1,8 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ReduxProvider } from "@/redux/provider";
 import { Navbar } from "@/components/navbar/navbar";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { LanguageProviderWrapper } from "@/components/LanguageProviderWrapper";
 
 export const metadata: Metadata = {
   title: "Kazi up",
@@ -30,8 +20,10 @@ export default function RootLayout({
         className={`antialiased bg-[#070F2B]`}
       >
         <ReduxProvider>
-          <Navbar />
-          {children}
+          <LanguageProviderWrapper>
+            <Navbar />
+            {children}
+          </LanguageProviderWrapper>
         </ReduxProvider>
       </body>
     </html>
