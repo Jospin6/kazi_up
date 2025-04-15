@@ -24,6 +24,8 @@ export interface Job {
 interface JobState {
     jobs: Job[];
     job: Job | null;
+    page: number;
+    hasMore: boolean;
     loading: boolean;
     error: string | null;
 }
@@ -31,14 +33,19 @@ interface JobState {
 const initialState: JobState = {
     jobs: [],
     job: null,
+    page: 1,
+    hasMore: true,
     loading: false,
     error: null,
 };
 
-export const fetchJobs = createAsyncThunk("jobs/fetchJobs", async () => {
-    const response = await axios.get("/api/jobs");
-    return response.data;
-});
+export const fetchJobs = createAsyncThunk(
+    "jobs/fetchJobs",
+    async ({ page = 1, limit = 10 }: { page: number; limit?: number }) => {
+        const response = await axios.get(`/api/jobs?page=${page}&limit=${limit}`);
+        return response.data;
+    }
+);
 
 export const getJob = createAsyncThunk("jobs/getJob", async (id: any) => {
     const response = await axios.get(`/api/jobs/${id}`);
@@ -72,7 +79,14 @@ export const deleteJob = createAsyncThunk("jobs/deleteJob", async (id: string) =
 const jobSlice = createSlice({
     name: "jobs",
     initialState,
-    reducers: {},
+    reducers: {
+        resetJobs: (state) => {
+            state.jobs = [];
+            state.page = 1;
+            state.hasMore = true;
+            state.error = null;
+        },
+    },
     extraReducers: (builder) => {
         builder
             .addCase(fetchJobs.pending, (state) => {
@@ -80,8 +94,10 @@ const jobSlice = createSlice({
                 state.error = null;
             })
             .addCase(fetchJobs.fulfilled, (state, action: PayloadAction<Job[]>) => {
+                state.page += 1;
+                state.hasMore = action.payload.length > 0;
                 state.loading = false;
-                state.jobs = action.payload;
+                state.jobs.push(...action.payload);
             })
             .addCase(fetchJobs.rejected, (state, action) => {
                 state.loading = false;
@@ -116,5 +132,7 @@ const jobSlice = createSlice({
 
 export const selectJobs = (state: RootState) => state.job.jobs
 export const selectJob = (state: RootState) => state.job.job
+
+export const { resetJobs } = jobSlice.actions;
 
 export default jobSlice.reducer;

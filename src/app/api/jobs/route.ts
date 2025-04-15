@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "../../../../prisma/prisma"
 
 export async function POST(req: Request) {
@@ -52,7 +52,20 @@ export async function POST(req: Request) {
   }
 }
 
-export async function GET(req: Request) {
-  const jobs = await prisma.job.findMany()
-  return NextResponse.json(jobs)
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const page = parseInt(searchParams.get('page') || '1', 10);
+  const limit = parseInt(searchParams.get('limit') || '10', 10);
+
+  const skip = (page - 1) * limit;
+
+  const jobs = await prisma.job.findMany({
+    skip,
+    take: limit,
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
+
+  return NextResponse.json(jobs);
 }

@@ -1,7 +1,7 @@
 "use client"
 import { fetchJobs, selectJobs } from "@/redux/job/jobSlice";
-import { AppDispatch } from "@/redux/store";
-import { useEffect, useState } from "react";
+import { AppDispatch, RootState } from "@/redux/store";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Button } from "@/components/ui/button";
 import { ArrowDown, ArrowDownIcon, Search } from "lucide-react";
@@ -19,7 +19,9 @@ import { useTranslation } from 'react-i18next'
 export default function Home() {
   const { t } = useTranslation()
   const dispatch = useDispatch<AppDispatch>()
-  const jobs = useSelector(selectJobs)
+  const { jobs, page, loading, hasMore } = useSelector(
+    (state: RootState) => state.job
+  );
   const jobCategories = useSelector(selectJobCategories)
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
@@ -66,11 +68,30 @@ export default function Home() {
     "Remote"
   ]
 
+  const loaderRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    dispatch(fetchJobs())
+    dispatch(fetchJobs({ page: 1 }))
     dispatch(fetchJobCategories())
   }, [dispatch])
+
+  useEffect(() => {
+    if (!loaderRef.current || !hasMore || loading) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          dispatch(fetchJobs({ page }));
+        }
+      },
+      { threshold: 1 }
+    );
+
+    observer.observe(loaderRef.current);
+    return () => observer.disconnect();
+  }, [loaderRef, hasMore, loading]);
+
+
 
   const filteredHistory = searchHistory.filter(item =>
     item.toLowerCase().includes(searchTerm.toLowerCase())
@@ -113,49 +134,49 @@ export default function Home() {
     if (filteredTags.length === 0 && filteredLocations.length === 0) {
       return jobs
     }
-  
+
     return jobs.filter((job) => {
       const jobTags = transformStringTagsToArray(job.tags).map(tag => tag.toLowerCase())
       const jobLocations = parseStringArray(job.jobRestricted).map(loc => loc.toLowerCase())
-  
+
       const hasTagMatch = filteredTags.some(tag =>
         jobTags.includes(tag.toLowerCase())
       )
-  
+
       const hasLocationMatch = filteredLocations.some(loc =>
         jobLocations.includes(loc.toLowerCase())
       )
-  
+
       // Logique :
       if (filteredTags.length > 0 && filteredLocations.length > 0) {
         // Si les deux sont présents → il faut que les deux matchent
         return hasTagMatch && hasLocationMatch
       }
-  
+
       // Sinon, on utilise le filtre actif uniquement
       if (filteredTags.length > 0) {
         return hasTagMatch
       }
-  
+
       if (filteredLocations.length > 0) {
         return hasLocationMatch
       }
-  
+
       return true
     })
   }
-  
-  
+
+
   const visibleJobs = getFilteredJobs()
 
   return (
     <div className="">
       <div className="text-center">
         <h1 className="text-6xl bg-gradient-to-r from-[#18CB96] to-gray-300 bg-clip-text text-transparent font-bold">
-        {t("bigTitle")}
+          {t("bigTitle")}
         </h1>
         <h4 className="text-2xl text-gray-300 mt-3">
-        {t("subBigTitle")}  
+          {t("subBigTitle")}
         </h4>
       </div>
       <div className="w-8/12 m-auto">
@@ -268,7 +289,8 @@ export default function Home() {
           <div>
 
             {visibleJobs.map(job => (<MainCard job={job} key={job.id} />))}
-
+            {loading && <p>Chargement...</p>}
+            <div ref={loaderRef} />
           </div>
         </div>
       </div>
