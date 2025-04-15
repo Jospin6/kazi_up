@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "@/redux/store";
 import { getUser, selectUser, updateUser, User } from "@/redux/user/userSlice";
 import { useTranslation } from 'react-i18next'
+import { EditUserItem } from "../ui/editUserItem";
 
 const Select = dynamic(() => import("react-select"), { ssr: false });
 
@@ -176,10 +177,11 @@ export default function EditUserForm({ user }: { user: User }) {
 
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="border border-gray-700 p-3 rounded-2xl">
-            <div className="flex items-center">
-                <div className="mr-4">
+
+            <EditUserItem title={"Profile photo"} subTitle="Please set a real full-color profile photo (not black and white) of just your face. Please smile :)">
+                <div className="flex items-center">
                     <InputField
-                        label={t("avatar")}
+                        label={""}
                         type="file"
                         name={"avatar"}
                         onChange={handleAvatarChange}
@@ -187,170 +189,214 @@ export default function EditUserForm({ user }: { user: User }) {
                         register={register}
                         errors={errors}
                     />
+                    {logoPreview && (
+                        <div className="w-[150px] h-[150px] ml-4 rounded overflow-hidden">
+                            <img src={logoPreview} alt="Preview" className="object-cover w-full h-full" />
+                        </div>
+                    )}
+                    {avatarUrl && (
+                        <img src={avatarUrl} alt="Avatar" className="ml-4" width={150} height={150} />
+                    )}
                 </div>
+            </EditUserItem>
 
-                {logoPreview && (
-                    <div className="w-[100px] h-[100px] rounded overflow-hidden">
-                        <img src={logoPreview} alt="Preview" className="object-cover w-full h-full" />
-                    </div>
-                )}
-                {avatarUrl && (
-                    <img src={avatarUrl} alt="Avatar" width={100} height={100} />
-                )}
-            </div>
-            <InputField
-                label={t("username")}
-                name={"username"}
-                placeholder={t("username")}
-                register={register}
-                errors={errors}
-            />
-
-            <InputField
-                label={t("email")}
-                type="email"
-                name={"email"}
-                placeholder={t("email")}
-                register={register}
-                errors={errors}
-            />
-
-            <div className="mb-4">
-                <Label className="text-[12px] text-gray-300 mb-1 font-medium">
-                    {t("location")}
-                </Label>
-                <Select
-                    options={countriesOptions}
-                    value={countriesOptions.find((opt) => opt.value === location)}
-                    onChange={handleLocationChange}
-                    placeholder={t("location")}
-                    isClearable
-                    styles={customStyles}
+            <EditUserItem title={t("username")} subTitle="">
+                <InputField
+                    label=""
+                    name={"username"}
+                    className="w-2/4"
+                    placeholder={t("username")}
+                    register={register}
+                    errors={errors}
                 />
-            </div>
+            </EditUserItem>
 
-            <div className="mb-4">
-                <Label className="text-[12px] text-gray-300 mb-1 font-medium">
-                {t("residency")}
-                </Label>
-                <Select
-                    options={countriesOptions}
-                    onChange={handleResidencyCountryChange}
-                    value={countriesOptions.find((opt) => opt.value === residencyCountry)}
-                    placeholder={t("residency")}
-                    isClearable
-                    styles={customStyles}
+            <EditUserItem title={t("email")}>
+                <InputField
+                    label=""
+                    type="email"
+                    className="w-2/4"
+                    name={"email"}
+                    placeholder={t("email")}
+                    register={register}
+                    errors={errors}
                 />
-            </div>
+            </EditUserItem>
 
-            <div className="mb-4">
-                <Label className="text-[12px] text-gray-300 mb-1 font-medium">
-                {t("nationality")}
-                </Label>
-                <Select
-                    options={countriesOptions}
-                    value={countriesOptions.find((opt) => opt.value === nationality)}
-                    onChange={handleNationalityChange}
-                    placeholder={t("nationality")}
-                    isClearable
-                    styles={customStyles}
+
+            <EditUserItem title={t("location")} subTitle="In which country are you staying now? This helps us connect you to other remote workers there.">
+                <div className="w-2/4">
+                    <Select
+                        options={countriesOptions}
+                        value={countriesOptions.find((opt) => opt.value === location)}
+                        onChange={handleLocationChange}
+                        placeholder={t("location")}
+                        isClearable
+                        styles={customStyles}
+                    />
+                </div>
+            </EditUserItem>
+
+            <EditUserItem title={t("residency")} subTitle="What's your current legal country of residence? This is the country you're legally registered as a resident at the city or country government. If you don't have one now, use your last known. This is important for employers.">
+                <div className="w-2/4">
+                    <Select
+                        options={countriesOptions}
+                        onChange={handleResidencyCountryChange}
+                        value={countriesOptions.find((opt) => opt.value === residencyCountry)}
+                        placeholder={t("residency")}
+                        isClearable
+                        styles={customStyles}
+                    />
+                </div>
+            </EditUserItem>
+
+            <EditUserItem title={t("nationality")} subTitle="What's the country in your passport? If you have multiple, use the primary. This is important for employers.">
+                <div className="w-2/4">
+                    <Select
+                        options={countriesOptions}
+                        value={countriesOptions.find((opt) => opt.value === nationality)}
+                        onChange={handleNationalityChange}
+                        placeholder={t("nationality")}
+                        isClearable
+                        styles={customStyles}
+                    />
+                </div>
+            </EditUserItem>
+
+            <EditUserItem title={t("gender")}>
+                <div className="w-2/4">
+                    <SelectField
+                        name={"gender"}
+                        label=""
+                        defaultValue={user?.gender}
+                        options={[
+                            { value: "male", label: "Male" },
+                            { value: "femal", label: "Femal" }]}
+                        register={register}
+                        errors={errors}
+                    />
+                </div>
+            </EditUserItem>
+            <EditUserItem title={t("bio")}>
+                <TextAreaField
+                    label=""
+                    name={"bio"}
+                    className="w-2/4"
+                    placeholder={t("bio")}
+                    register={register}
+                    errors={errors} />
+            </EditUserItem>
+
+            <EditUserItem title={t("skills")} subTitle="Use tags like react, js, html, ux, ui, customer support, marketing, front end, backend, office365, excel etc. The more/better tags you use the more you show up on the site! See the Remote OK jobs pages for example tags in your field to add here.">
+                <TextAreaField
+                    label=""
+                    name={"skills"}
+                    placeholder={t("skills")}
+                    register={register}
+                    errors={errors} />
+            </EditUserItem>
+
+
+            <EditUserItem title={t("website")}>
+                <InputField
+                    label=""
+                    className="w-2/4"
+                    name={"website"}
+                    placeholder={"https://"}
+                    register={register}
+                    errors={errors}
                 />
-            </div>
+            </EditUserItem>
 
-            <SelectField
-                name={"gender"}
-                label={t("gender")}
-                defaultValue={user?.gender}
-                options={[
-                    { value: "male", label: "Male" },
-                    { value: "femal", label: "Femal" }]}
-                register={register}
-                errors={errors}
-            />
+            <EditUserItem title={t("github")}>
+                <InputField
+                    label=""
+                    name={"github"}
+                    className="w-2/4"
+                    placeholder={"ex: jospin6"}
+                    register={register}
+                    errors={errors}
+                />
+            </EditUserItem>
 
-            <TextAreaField
-                label={t("bio")}
-                name={"bio"}
-                placeholder={t("bio")}
-                register={register}
-                errors={errors} />
 
-            <TextAreaField
-                label={t("skills")}
-                name={"skills"}
-                placeholder={t("skills")}
-                register={register}
-                errors={errors} />
+            <EditUserItem title={t("x")}>
+                <InputField
+                    label=""
+                    name={"twitter"}
+                    className="w-2/4"
+                    placeholder={"ex: jospinndagano"}
+                    register={register}
+                    errors={errors}
+                />
+            </EditUserItem>
 
-            <InputField
-                label={t("website")}
-                name={"website"}
-                placeholder={"https://"}
-                register={register}
-                errors={errors}
-            />
+            <EditUserItem title={t("linkedin")}>
+                <InputField
+                    label=""
+                    name={"linkedin"}
+                    className="w-2/4"
+                    placeholder={"ex: jospin_ndagano"}
+                    register={register}
+                    errors={errors}
+                />
+            </EditUserItem>
 
-            <InputField
-                label={t("github")}
-                name={"github"}
-                placeholder={"ex: jospin6"}
-                register={register}
-                errors={errors}
-            />
+            <EditUserItem title={t("languages")}>
+                <InputField
+                    label=""
+                    name={"languages"}
+                    className="w-2/4"
+                    placeholder={"ex: English, French"}
+                    register={register}
+                    errors={errors}
+                />
+            </EditUserItem>
 
-            <InputField
-                label={t("x")}
-                name={"twitter"}
-                placeholder={"ex: jospinndagano"}
-                register={register}
-                errors={errors}
-            />
+            <EditUserItem title={t("available")} subTitle="You'll only be able to receive job offers and get contacted if you're set to available.">
+                <InputField
+                    label=""
+                    name={"available"}
+                    className="w-2/4"
+                    placeholder={"ex: 2023-10-10"}
+                    type="date"
+                    register={register}
+                    errors={errors}
+                />
+            </EditUserItem>
 
-            <InputField
-                label={t("linkedin")}
-                name={"linkedin"}
-                placeholder={"ex: jospin_ndagano"}
-                register={register}
-                errors={errors}
-            />
 
-            <InputField
-                label={t("languages")}
-                name={"languages"}
-                placeholder={"ex: English, French"}
-                register={register}
-                errors={errors}
-            />
+            <EditUserItem title={t("timezone")}>
+                <InputField
+                    label=""
+                    name={"timezone"}
+                    className="w-2/4"
+                    placeholder={"Ex: +1, +2, +4"}
+                    register={register}
+                    errors={errors}
+                />
+            </EditUserItem>
 
-            <InputField
-                label={t("available")}
-                name={"available"}
-                placeholder={"ex: 2023-10-10"}
-                type="date"
-                register={register}
-                errors={errors}
-            />
-            <InputField
-                label={t("timezone")}
-                name={"timezone"}
-                placeholder={"Ex: +1, +2, +4"}
-                register={register}
-                errors={errors}
-            />
-            <InputField
-                label={t("annualpay")}
-                name={"annualpay"}
-                placeholder={"Ex: 30000"}
-                register={register}
-                errors={errors}
-            />
-            <InputField
-                label={t("hourlypay")}
-                name={"hourlypay"}
-                placeholder={"Ex: 15"}
-                register={register}
-                errors={errors}
-            />
+            <EditUserItem title={t("annualpay")}>
+                <InputField
+                    label=""
+                    name={"annualpay"}
+                    className="w-2/4"
+                    placeholder={"Ex: 30000"}
+                    register={register}
+                    errors={errors}
+                />
+            </EditUserItem>
+            <EditUserItem title={t("hourlypay")}>
+                <InputField
+                    label=""
+                    name={"hourlypay"}
+                    className="w-2/4"
+                    placeholder={"Ex: 15"}
+                    register={register}
+                    errors={errors}
+                />
+            </EditUserItem>
             <div className="flex justify-end my-4">
                 <Button type="submit">{isSubmitting ? "Loading..." : t("editProfil")}</Button>
             </div>

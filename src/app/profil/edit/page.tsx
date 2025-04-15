@@ -34,7 +34,7 @@ export default function Edit() {
     const projects = user ? user.UserActivity?.filter(project => project.type === "SIDE_PROJECT") : []
 
     return <div className="w-10/12 m-auto">
-        <div className="w-8/12 px-4">
+        <div className="w-full px-4">
             <h1 className="text-xl font-semibold mb-4 text-gray-100">Edit your profil</h1>
             <div>
                 {user && (<EditUserForm user={user} />)}

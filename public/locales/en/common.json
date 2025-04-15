@@ -71,5 +71,13 @@
     "chooseTag": "choose tag",
     "chooseLocation": "choose location",
     "applyEmail": "apply email",
-    "addCategory": "Add category"
+    "addCategory": "Add category",
+    "positionDescription": "Please specify as single job position like 'Marketing Manager' or 'Node JS Developer', not a sentence like 'Looking for PM / Biz Dev / Manager'. We know your job is important but please DO NOT WRITE IN FULL CAPS. If posting multiple roles, please create multiple job posts. A job post is limited to a single job. We only allow real jobs, absolutely no MLM-type courses 'learn how to work online' please.",
+    "companyDescription": "Your company's brand/trade name: without Inc., Ltd., B.V., Pte., etc",
+    "primaryTagsDescription": "Please select the primary tags that best describe your job. This will be shown to the applicants. Please select at least 1 tag.",
+    "keywordDescription": "Short tags are preferred. Use tags like industry and tech stack. The first 3 or 4 tags are shown on the site, the other tags aren't but the job will be shown on each tag specific page (like /remote-react-jobs). We also sometimes generate tags automatically after you post/edit to supplement.",
+    "restrictions": "If you'd only like to hire people from a specific location or timezone this remote job is restricted to (e.g. Europe, United States or Japan). If not restricted, please leave it as 'Worldwide'. The less restricted this is, the more applicants you will get. Keeping it 'Worldwide' is highly recommended as you'll have access to a worldwide pool of talent",
+    "remoteDescription": "choose if your job will be remote, on site or hibryd",
+    "urlApply": "Apply URLs with a form an applicant can fill out generally receive a lot more applicants than having people apply by email (below). A good platform to have applicants apply on is Lever (not affiliated). If you have a form, please put the URL to the form here. If you don't have a form, please leave this blank and use the email field below.",
+    "emailApply": "If you have a specific email address for applicants to apply to, please put it here. If you have a form, please leave this blank and use the URL field above."
 }

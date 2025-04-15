@@ -6,9 +6,10 @@ type SelectFieldProps = {
     errors: any; 
     onChange?: (event: React.ChangeEvent<HTMLSelectElement>) => void; 
     defaultValue?: string;
+    description?: string;
 };
 
-export const SelectField: React.FC<SelectFieldProps> = ({ name, label, defaultValue, options, register, onChange, errors }) => {
+export const SelectField: React.FC<SelectFieldProps> = ({ description, name, label, defaultValue, options, register, onChange, errors }) => {
     return (
         <div className="text-gray-300 mb-4">
             <label htmlFor={name} className="block text-sm mb-1 font-medium">{label.toLocaleUpperCase()}</label>
@@ -20,7 +21,8 @@ export const SelectField: React.FC<SelectFieldProps> = ({ name, label, defaultVa
                     </option>
                 ))}
             </select>
-            {errors[name] && <span className="text-red-600 text-sm">{errors[name]?.message}</span>}
+            {errors[name] && <p className="text-red-600 text-sm">{errors[name]?.message}</p>}
+            <p className="text-[10px] text-gray-400">{description}</p>
         </div>
     );
 };

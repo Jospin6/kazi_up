@@ -155,6 +155,7 @@ export default function JobForm() {
             <div className="border border-gray-700 p-3 rounded-2xl">
                 <InputField
                     label={t("jobPosition")}
+                    description={t("positionDescription")}
                     name={"position"}
                     placeholder={t("jobPosition")}
                     register={register}
@@ -164,6 +165,7 @@ export default function JobForm() {
                 <InputField
                     label={t("companyName")}
                     name={"companyName"}
+                    description={t("companyDescription")}
                     placeholder={t("companyName")}
                     register={register}
                     errors={errors}
@@ -195,6 +197,7 @@ export default function JobForm() {
                 <SelectField
                     name={"primaryTag"}
                     label={t("primaryTags")}
+                    description={t("primaryTagsDescription")}
                     options={[
                         ...availableTags.map(tag => ({ value: tag, label: tag })),
                     ]}
@@ -222,6 +225,7 @@ export default function JobForm() {
                         isClearable
                         styles={customStyles}
                     />
+                    <p className="text-[10px] text-gray-400">{t("keywordDescription")}</p>
                 </div>
 
                 <div className="text-gray-300 mb-4">
@@ -243,11 +247,13 @@ export default function JobForm() {
                         isClearable
                         styles={customStyles}
                     />
+                    <p className="text-[10px] text-gray-400">{t("restrictions")}</p>
                 </div>
 
                 <SelectField
                     name={"remote"}
                     label={t("remote")}
+                    description={t("remoteDescription")}
                     options={[
                         { value: "onsite", label: "Onsite" },
                         { value: "hybrid", label: "Hybrid" },
@@ -304,6 +310,7 @@ export default function JobForm() {
                     {activeField === "website" ? (
                         <InputField
                             label={t("website")}
+                            description={t("urlApply")}
                             name="website"
                             placeholder="https://"
                             register={register}
@@ -313,6 +320,7 @@ export default function JobForm() {
                     ) : (
                         <InputField
                             label={t("applyEmail")}
+                            description={t("emailApply")}
                             name="website"
                             placeholder="you@example.com"
                             register={register}
