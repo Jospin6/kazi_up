@@ -38,10 +38,10 @@ export const SimillarJobs = ({ job }: { job: Job }) => {
     );
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {simillarJobs.map((job) => (
+        <div className="">
+            {simillarJobs.length > 0 ? simillarJobs.map((job) => (
                 <MainCard job={job} key={job.id} />
-            ))}
+            )): (<p className="text-center text-gray-500">No simillar jobs</p>)}
             {loading && <p>Chargement...</p>}
             <div ref={loaderRef} />
         </div>

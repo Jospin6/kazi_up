@@ -76,6 +76,9 @@ export default function Job() {
                         <AvatarFallback className="text-6xl font-bold">{job?.companyName.charAt(0).toUpperCase()}</AvatarFallback>
                     </Avatar>
                 </div>
+                <div className="text-2xl text-gray-300 font-bold">
+                    {job?.companyName}
+                </div>
                 <Button className="mr-4 px-10 w-full my-4">Apply Now</Button>
                 <p className="text-gray-300 text-sm">👀 1,966 views</p>
                 <p className="text-gray-300 text-sm">✅ 364 applied (19%)</p>
