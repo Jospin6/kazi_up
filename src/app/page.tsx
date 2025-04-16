@@ -15,10 +15,12 @@ import { fetchJobCategories, selectJobCategories } from "@/redux/jobCategory/job
 import { parseStringArray, transformStringTagsToArray, transformStringToArray } from "@/lib/utils";
 import { SubItem } from "@/components/ui/subItem";
 import { useTranslation } from 'react-i18next'
+import { createView } from "@/redux/views/viewSlice";
 
 export default function Home() {
   const { t } = useTranslation()
   const dispatch = useDispatch<AppDispatch>()
+  
   const { jobs, page, loading, hasMore } = useSelector(
     (state: RootState) => state.job
   );
@@ -77,19 +79,19 @@ export default function Home() {
 
   useEffect(() => {
     if (!loaderRef.current || !hasMore || loading) return;
-
+  
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) {
+        if (entries[0].isIntersecting && page > 1) {
           dispatch(fetchJobs({ page }));
         }
       },
       { threshold: 1 }
     );
-
+  
     observer.observe(loaderRef.current);
     return () => observer.disconnect();
-  }, [loaderRef, hasMore, loading]);
+  }, [loaderRef, hasMore, loading, page, dispatch]);
 
 
 
@@ -172,12 +174,12 @@ export default function Home() {
   return (
     <div className="">
       <div className="text-center">
-        <h1 className="text-6xl bg-gradient-to-r from-[#18CB96] to-gray-300 bg-clip-text text-transparent font-bold">
+        <div className="text-6xl bg-gradient-to-r from-[#18CB96] to-gray-300 bg-clip-text text-transparent font-bold">
           {t("bigTitle")}
-        </h1>
-        <h4 className="text-2xl text-gray-300 mt-3">
+        </div>
+        <div className="text-2xl text-gray-300 mt-3">
           {t("subBigTitle")}
-        </h4>
+        </div>
       </div>
       <div className="w-8/12 m-auto">
         <div className="flex justify-center mt-6 relative">

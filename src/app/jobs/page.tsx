@@ -10,7 +10,7 @@ export default function Jobs() {
   const jobs = useSelector(selectJobs)
 
   useEffect(() => {
-    dispatch(fetchJobs())
+    dispatch(fetchJobs({page: 1}))
   }, [dispatch])
 
   return <div>

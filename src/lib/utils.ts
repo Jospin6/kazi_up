@@ -90,4 +90,22 @@ export const transformStringTagsToArray = (input: string): string[] => {
   return input.split(",").map(tag => tag.trim().replace(/^"|"$/g, ""))
 }
 
+export function detectType(input: string): 'email' | 'url' | 'none' {
+  const emailRegex =
+    /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
+
+  const urlRegex =
+    /^(https?:\/\/)?([\w-]+\.)+[\w-]{2,}(\/[\w-._~:/?#[\]@!$&'()*+,;=]*)?$/
+
+  if (emailRegex.test(input)) {
+    return 'email'
+  }
+
+  if (urlRegex.test(input)) {
+    return 'url'
+  }
+
+  return 'none'
+}
+
 

@@ -5,13 +5,16 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "next/navigation";
-import { formatRelativeTime, parseStringArray } from "@/lib/utils";
+import { detectType, formatRelativeTime, parseStringArray } from "@/lib/utils";
 import { SubItem } from "@/components/ui/subItem";
 import dynamic from 'next/dynamic';
 import { Button } from "@/components/ui/button";
 import { BellIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SimillarJobs } from "@/components/ui/simillarJobs";
+import Link from "next/link";
+import { createApplied } from "@/redux/applied/appliedSlice";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 const RichTextRenderer = dynamic(() => import('@/components/ui/RichTextRenderer'), {
     ssr: false,
@@ -22,6 +25,7 @@ export default function Job() {
     const id = params?.id
     const dispatch = useDispatch<AppDispatch>()
     const job = useSelector(selectJob)
+    const currentUser = useCurrentUser()
 
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
@@ -33,6 +37,16 @@ export default function Job() {
     useEffect(() => {
         dispatch(getJob(id!))
     }, [dispatch])
+
+    const websiteType = detectType(job?.website!)
+
+    const href =
+        websiteType === 'url'
+            ? job?.website!
+            : websiteType === 'email'
+                ? `mailto:${job?.website!}`
+                : '#'
+
     return <div className="w-10/12 m-auto flex">
         <div className="w-8/12 pr-4">
             <h1 className="text-3xl font-bold text-gray-200">{job?.position}</h1>
@@ -42,8 +56,10 @@ export default function Job() {
                 <div className="flex flex-wrap w-full">{parseStringArray(job?.jobRestricted!).map(res => (<SubItem key={res} title={res} />))}</div>
                 {/* <Badge variant="outline">Badge</Badge> */}
             </div>
-            <div className="flex mt-4 justify-start">
-                <Button className="mr-4 px-10">Apply Now</Button>
+            <div className="flex mt-4 justify-start items-center">
+                <Link href={href} target="_blank" className="mr-4 my-4">
+                    <Button className=" px-10 w-full " onClick={() => dispatch(createApplied({userId: currentUser?.id, jobId: job?.id}))}>Apply Now</Button>
+                </Link>
                 <Button className="bg-gray-800 text-gray-300 text-sm"><BellIcon size={17} />Receive mails with simillar Jobs</Button>
             </div>
             <div className="mt-8">
@@ -55,7 +71,9 @@ export default function Job() {
 
             <div className="mt-8 border border-gray-700 rounded-2xl p-4">
                 <h3 className="text-gray-300 font-semibold text-[16px]">How to apply</h3>
-                <Button className="mr-4 px-10 w-full my-4">Apply Now</Button>
+                <Link href={href} target="_blank">
+                    <Button className="mr-4 px-10 w-full my-4" onClick={() => dispatch(createApplied({userId: currentUser?.id, jobId: job?.id}))}>Apply Now</Button>
+                </Link>
                 <div className="text-gray-300 text-center">
                     <RichTextRenderer html={job?.howToApply!} />
                 </div>
@@ -64,7 +82,7 @@ export default function Job() {
             <div className="mt-8">
                 <h3 className="text-gray-300 font-semibold text-[16px]">Simillar Jobs</h3>
                 <div className="mt-4">
-                    <SimillarJobs job={job!}/>
+                    {job && <SimillarJobs job={job} />}
                 </div>
             </div>
         </div>
@@ -79,9 +97,11 @@ export default function Job() {
                 <div className="text-2xl text-gray-300 font-bold">
                     {job?.companyName}
                 </div>
-                <Button className="mr-4 px-10 w-full my-4">Apply Now</Button>
-                <p className="text-gray-300 text-sm">👀 1,966 views</p>
-                <p className="text-gray-300 text-sm">✅ 364 applied (19%)</p>
+                <Link href={href} target="_blank">
+                    <Button className="mr-4 px-10 w-full my-4" onClick={() => dispatch(createApplied({userId: currentUser?.id, jobId: job?.id}))}>Apply Now</Button>
+                </Link>
+                <p className="text-gray-300 text-sm">👀 {job?.View?.length || "0"} views</p>
+                <p className="text-gray-300 text-sm">✅ {job?.Applied?.length || "0"} applied (19%)</p>
             </div>
         </div>
     </div>

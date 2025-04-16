@@ -5,7 +5,11 @@ export async function GET(req: Request) {
     const url = new URL(req.url)
     const id = url.pathname.split('/').pop() as string
     const job = await prisma.job.findUnique({
-        where: {id,}
+        where: {id,},
+        include: {
+            View: true,
+            Applied: true
+        }
     })
     if (!job) {
         return NextResponse.json({message: "job not found"})

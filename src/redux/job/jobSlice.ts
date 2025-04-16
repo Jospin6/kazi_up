@@ -19,6 +19,8 @@ export interface Job {
     createdAt?: string;
     website: string;
     userId?: string
+    View?: any[];
+    Applied?: any[];
 }
 
 interface JobState {
@@ -94,10 +96,14 @@ const jobSlice = createSlice({
                 state.error = null;
             })
             .addCase(fetchJobs.fulfilled, (state, action: PayloadAction<Job[]>) => {
+                const newJobs = action.payload.filter(
+                    (job) => !state.jobs.some((existingJob) => existingJob.id === job.id)
+                );
+
                 state.page += 1;
-                state.hasMore = action.payload.length > 0;
+                state.hasMore = newJobs.length > 0;
                 state.loading = false;
-                state.jobs.push(...action.payload);
+                state.jobs.push(...newJobs);
             })
             .addCase(fetchJobs.rejected, (state, action) => {
                 state.loading = false;

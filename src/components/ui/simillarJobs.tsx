@@ -36,7 +36,7 @@ export const SimillarJobs = ({ job }: { job: Job }) => {
     const simillarJobs = jobs.filter(
         (item) => item.primaryTag === job.primaryTag && item.id !== job.id
     );
-
+    if (!job || !job.primaryTag) return null;
     return (
         <div className="">
             {simillarJobs.length > 0 ? simillarJobs.map((job) => (

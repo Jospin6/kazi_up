@@ -14,33 +14,37 @@ datasource db {
 }
 
 model User {
-  id                String   @id @default(uuid())
-  username          String
-  email             String   @unique
-  password          String?
-  role              UserRole @default(USER)
-  avatar            Bytes?
-  location          String?
+  id               String   @id @default(uuid())
+  username         String
+  email            String   @unique
+  password         String?
+  role             UserRole @default(USER)
+  avatar           Bytes?
+  location         String?
   residencyCountry String?
-  nationality       String?
-  gender            String?
-  website           String?
-  github            String?
-  twitter           String?
-  linkedin          String?
-  bio               String?
-  skills            String?
-  languages         String?
-  available         String?
-  timezone          String?
-  annualpay         String?
-  hourlypay         String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  nationality      String?
+  gender           String?
+  website          String?
+  github           String?
+  twitter          String?
+  linkedin         String?
+  bio              String?
+  skills           String?
+  languages        String?
+  available        String?
+  timezone         String?
+  annualpay        String?
+  hourlypay        String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   UserActivity UserActivity[]
 
   Job Job[]
+
+  View View[]
+
+  Applied Applied[]
 }
 
 model JobCategory {
@@ -80,6 +84,10 @@ model Job {
   jobCategoryId     String?
   EmployemenType    EmployementType? @relation(fields: [employementTypeId], references: [id])
   employementTypeId String?
+
+  View View[]
+
+  Applied Applied[]
 }
 
 model UserActivity {
@@ -87,7 +95,7 @@ model UserActivity {
   type        ActivityType
   yearStart   String?
   yearEnd     String?
-  title       String? 
+  title       String?
   company     String?
   url         String?
   email       String?
@@ -99,12 +107,29 @@ model UserActivity {
   updatedAt DateTime @updatedAt
 }
 
+model View {
+  id        String   @id @default(uuid())
+  jobId     String?
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+  Job       Job?     @relation(fields: [jobId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Applied {
+  id        String   @id @default(uuid())
+  jobId     String?
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+  Job       Job?     @relation(fields: [jobId], references: [id])
+  createdAt DateTime @default(now())
+}
+
 enum UserRole {
   USER
   ADMIN
   SUPERADMIN
 }
-
 
 enum ActivityType {
   EXPERIENCE
