@@ -125,6 +125,15 @@ model Applied {
   createdAt DateTime @default(now())
 }
 
+model JobSubscription {
+  id        String   @id @default(uuid())
+  email     String
+  jobTag    String
+  createdAt DateTime @default(now())
+
+  @@unique([email, jobTag])
+}
+
 enum UserRole {
   USER
   ADMIN

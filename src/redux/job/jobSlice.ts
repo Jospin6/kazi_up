@@ -23,9 +23,15 @@ export interface Job {
     Applied?: any[];
 }
 
+export interface JobSubscription {
+    email: string
+    tag: string
+}
+
 interface JobState {
     jobs: Job[];
     job: Job | null;
+    jobSubscription: JobSubscription | null;
     page: number;
     hasMore: boolean;
     loading: boolean;
@@ -35,6 +41,7 @@ interface JobState {
 const initialState: JobState = {
     jobs: [],
     job: null,
+    jobSubscription: null,
     page: 1,
     hasMore: true,
     loading: false,
@@ -77,6 +84,33 @@ export const deleteJob = createAsyncThunk("jobs/deleteJob", async (id: string) =
     await axios.delete(`/api/jobs/${id}`);
     return id;
 });
+
+export const getJobSubscriptions = createAsyncThunk("", async ({email, tag}: {email: string, tag: string}) => {
+    const response = await axios.get(`/api/jobSubscriptions?email=${email}&tag=${tag}`)
+    return response.data
+})
+
+export const jobSubscription = createAsyncThunk("jobs/jobSubscription", async (data: { email: string; jobTag: string }) => {
+    const { email, jobTag } = data;
+
+    if (!email || !jobTag) {
+        throw new Error("Email and jobTag are required");
+    }
+
+    try {
+        const exists = await axios.post("/api/jobSubscriptions", { email, jobTag });
+
+        if (exists) {
+            return { message: "Already subscribed" };
+        }
+
+        const sub = await axios.post("/api/job-subscriptions", { email, jobTag });
+
+        return sub;
+    } catch (err) {
+        throw new Error("Failed to subscribe");
+    }
+})
 
 const jobSlice = createSlice({
     name: "jobs",
@@ -132,12 +166,17 @@ const jobSlice = createSlice({
             })
             .addCase(deleteJob.fulfilled, (state, action: PayloadAction<string>) => {
                 state.jobs = state.jobs.filter((job) => job.id !== action.payload);
+            })
+
+            .addCase(getJobSubscriptions.fulfilled, (state, action: PayloadAction<JobSubscription>) => {
+                state.jobSubscription = action.payload
             });
     },
 });
 
 export const selectJobs = (state: RootState) => state.job.jobs
 export const selectJob = (state: RootState) => state.job.job
+export const selectJobSubscription = (state: RootState) => state.job.jobSubscription
 
 export const { resetJobs } = jobSlice.actions;
 

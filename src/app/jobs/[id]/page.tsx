@@ -1,8 +1,8 @@
 "use client"
-import { getJob, selectJob, selectJobs } from "@/redux/job/jobSlice";
+import { getJob, getJobSubscriptions, jobSubscription, selectJob, selectJobs, selectJobSubscription } from "@/redux/job/jobSlice";
 import { AppDispatch } from "@/redux/store";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "next/navigation";
 import { detectType, formatRelativeTime, parseStringArray } from "@/lib/utils";
@@ -26,6 +26,7 @@ export default function Job() {
     const dispatch = useDispatch<AppDispatch>()
     const job = useSelector(selectJob)
     const currentUser = useCurrentUser()
+    const isJobSubscription = useSelector(selectJobSubscription)
 
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
@@ -38,7 +39,28 @@ export default function Job() {
         dispatch(getJob(id!))
     }, [dispatch])
 
+    const hasFetchedRef = useRef(false)
+
+    useEffect(() => {
+        if (
+            currentUser?.email &&
+            job?.primaryTag &&
+            !hasFetchedRef.current
+        ) {
+            dispatch(getJobSubscriptions({ email: currentUser.email, tag: job.primaryTag }))
+            hasFetchedRef.current = true
+        }
+    }, [currentUser?.email, job?.primaryTag])
+
     const websiteType = detectType(job?.website!)
+
+    const handleJobSubscription = () => {
+        if (!currentUser?.email) {
+            alert("Please login to subscribe")
+            return
+        }
+        dispatch(jobSubscription({ email: currentUser?.email, jobTag: job?.primaryTag || "" }))
+    }
 
     const href =
         websiteType === 'url'
@@ -58,9 +80,14 @@ export default function Job() {
             </div>
             <div className="flex mt-4 justify-start items-center">
                 <Link href={href} target="_blank" className="mr-4 my-4">
-                    <Button className=" px-10 w-full " onClick={() => dispatch(createApplied({userId: currentUser?.id, jobId: job?.id}))}>Apply Now</Button>
+                    <Button className=" px-10 w-full " onClick={() => dispatch(createApplied({ userId: currentUser?.id, jobId: job?.id }))}>Apply Now</Button>
                 </Link>
-                <Button className="bg-gray-800 text-gray-300 text-sm"><BellIcon size={17} />Receive mails with simillar Jobs</Button>
+                {!isJobSubscription && (
+                    <Button className="bg-gray-800 text-gray-300 text-sm" onClick={handleJobSubscription}><BellIcon size={17} />
+                        Receive mails with simillar Jobs
+                    </Button>
+                )}
+
             </div>
             <div className="mt-8">
                 <h3 className="text-gray-300 font-semibold text-[16px]">Description</h3>
@@ -72,7 +99,7 @@ export default function Job() {
             <div className="mt-8 border border-gray-700 rounded-2xl p-4">
                 <h3 className="text-gray-300 font-semibold text-[16px]">How to apply</h3>
                 <Link href={href} target="_blank">
-                    <Button className="mr-4 px-10 w-full my-4" onClick={() => dispatch(createApplied({userId: currentUser?.id, jobId: job?.id}))}>Apply Now</Button>
+                    <Button className="mr-4 px-10 w-full my-4" onClick={() => dispatch(createApplied({ userId: currentUser?.id, jobId: job?.id }))}>Apply Now</Button>
                 </Link>
                 <div className="text-gray-300 text-center">
                     <RichTextRenderer html={job?.howToApply!} />
@@ -98,7 +125,7 @@ export default function Job() {
                     {job?.companyName}
                 </div>
                 <Link href={href} target="_blank">
-                    <Button className="mr-4 px-10 w-full my-4" onClick={() => dispatch(createApplied({userId: currentUser?.id, jobId: job?.id}))}>Apply Now</Button>
+                    <Button className="mr-4 px-10 w-full my-4" onClick={() => dispatch(createApplied({ userId: currentUser?.id, jobId: job?.id }))}>Apply Now</Button>
                 </Link>
                 <p className="text-gray-300 text-sm">👀 {job?.View?.length || "0"} views</p>
                 <p className="text-gray-300 text-sm">✅ {job?.Applied?.length || "0"} applied (19%)</p>
