@@ -6,6 +6,7 @@ import Image from "next/image"
 import { useEffect, useState } from "react"
 import { transformStringToArray } from "@/lib/utils"
 import { useTranslation } from 'react-i18next'
+import Link from "next/link"
 
 export const ProfilItem = ({ className, user }: { className: string, user: User }) => {
     const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -21,7 +22,9 @@ export const ProfilItem = ({ className, user }: { className: string, user: User 
     return <div className={` bg-gray-900 border-gray-800 mt-2 relative rounded-2xl ${className}`}>
         <div className="h-[250px] rounded-t-2xl">
             {avatarUrl && (
-                <Image src={avatarUrl} className="w-[100%] h-[100%] rounded-t-2xl" alt="user avatar image" width={100} height={100} />
+                <Link href={`/${user.id}`}>
+                    <Image src={avatarUrl} className="w-[100%] h-[100%] rounded-t-2xl" alt="user avatar image" width={100} height={100} />
+                </Link>
             )}
         </div>
         <div className="mb-[45px] p-2">

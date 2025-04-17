@@ -9,15 +9,20 @@ import { fetchUsers, getUser, selectUser, selectUsers } from "@/redux/user/userS
 import Link from "next/link"
 import { useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
+import { useParams } from "next/navigation"
 
 export default function Users() {
+    const params = useParams()
+    const userId = params.userId
     const dispatch = useDispatch<AppDispatch>()
     const user = useSelector(selectUser)
     const currentUser = useCurrentUser()
 
+    const isCurrentUser = user?.id === currentUser?.id
+
     useEffect(() => {
-        if (currentUser) {
-            dispatch(getUser(currentUser.id!))
+        if (userId) {
+            dispatch(getUser(userId.toString()))
         }
     }, [currentUser, dispatch])
 
@@ -36,9 +41,12 @@ export default function Users() {
                     <h2 className="text-sm">{user?.email}</h2>
                 </div>
             </div>
-            <div className="flex items-center">
-                <Link href={"/profil/edit"}><Button>Edit your profil</Button></Link>
-            </div>
+            {isCurrentUser && (
+                <div className="flex items-center">
+                    <Link href={`/${userId}/edit`}><Button>Edit your profil</Button></Link>
+                </div>
+            )}
+
         </div>
         <div className="p-4 border border-gray-700 mt-4 rounded-2xl min-h-[100px]">
             <div>
