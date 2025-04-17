@@ -1,4 +1,5 @@
 "use client"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { UserProfilItem } from "@/components/ui/UserProfilItem"
@@ -16,9 +17,13 @@ export default function Users() {
 
     useEffect(() => {
         if (currentUser) {
-            dispatch(getUser(currentUser.id!))   
+            dispatch(getUser(currentUser.id!))
         }
     }, [currentUser, dispatch])
+
+    const experiences = user ? user.UserActivity?.filter(experience => experience.type === "EXPERIENCE") : []
+    const educations = user ? user.UserActivity?.filter(education => education.type === "EDUCATION") : []
+    const projects = user ? user.UserActivity?.filter(project => project.type === "SIDE_PROJECT") : []
 
     return <div className="w-8/12 m-auto">
         <div className="w-full py-2 px-4 h-[150px] flex justify-between rounded-2xl border border-gray-700 text-gray-300">
@@ -39,45 +44,117 @@ export default function Users() {
             <div>
                 <h1 className="text-2xl font-bold mb-4 text-gray-200">About</h1>
                 <p className="text-start text-gray-400 text-[14px]">
-                    Lorem, ipsum dolor sit amet consectetur adipisicing elit. 
-                    Cupiditate consequatur officia suscipit perferendis blanditiis 
-                    corrupti mollitia saepe alias quae repellendus deleniti, placeat 
-                    quidem quasi numquam cum, iusto sapiente laboriosam quis.
-                    Lorem, ipsum dolor sit amet consectetur adipisicing elit. 
-                    Cupiditate consequatur officia suscipit perferendis blanditiis 
-                    corrupti mollitia saepe alias quae repellendus deleniti, placeat 
-                    quidem quasi numquam cum, iusto sapiente laboriosam quis.
-                    Lorem, ipsum dolor sit amet consectetur adipisicing elit. 
-                    Cupiditate consequatur officia suscipit perferendis blanditiis 
-                    corrupti mollitia saepe alias quae repellendus deleniti, placeat 
-                    quidem quasi numquam cum, iusto sapiente laboriosam quis.
+                    {user?.bio}
                 </p>
             </div>
 
-            <UserProfilItem title="Nationality">
-                <div>Congolaise</div>
+            <UserProfilItem title="Location">
+                <div>{user?.location}</div>
+            </UserProfilItem>
+            <UserProfilItem title="Residency country">
+                <div>{user?.residencyCountry}</div>
             </UserProfilItem>
             <UserProfilItem title="Nationality">
-                <div>Congolaise</div>
+                <div>{user?.nationality}</div>
             </UserProfilItem>
-            <UserProfilItem title="Nationality">
-                <div>Congolaise</div>
+            <UserProfilItem title="Languages">
+                <div>{user?.languages}</div>
             </UserProfilItem>
-            <UserProfilItem title="Nationality">
-                <div>Congolaise</div>
+
+            <UserProfilItem title="Skills">
+                <div>{user?.skills}</div>
+            </UserProfilItem>
+
+            <UserProfilItem title="Gender">
+                <div>{user?.gender}</div>
+            </UserProfilItem>
+            <UserProfilItem title="LinkedIn">
+                <div>{user?.linkedin}</div>
+            </UserProfilItem>
+            <UserProfilItem title="X">
+                <div>{user?.twitter}</div>
+            </UserProfilItem>
+            <UserProfilItem title="Github">
+                <div>{user?.github}</div>
+            </UserProfilItem>
+
+            <UserProfilItem title="Website">
+                <div>{user?.website}</div>
+            </UserProfilItem>
+            <UserProfilItem title="Available">
+                <div>{user?.available}</div>
+            </UserProfilItem>
+            <UserProfilItem title="Annualy pay">
+                <div>{user?.annualpay}</div>
+            </UserProfilItem>
+            <UserProfilItem title="Hourly pay">
+                <div>{user?.hourlypay}</div>
+            </UserProfilItem>
+
+            <UserProfilItem title="Timezone">
+                <div>{user?.timezone}</div>
             </UserProfilItem>
 
         </div>
 
-        <div className="p-2 border border-gray-700 mt-8 rounded-2xl min-h-[100px]">
-            experiences
+        <div className="p-2 mt-8 rounded-2xl min-h-[100px]">
+            <div className="text-xl text-gray-300">experiences</div>
+            <div className="mb-3">
+                {experiences?.map(exp => (
+                    <Accordion type="single" key={exp.id} collapsible className="text-gray-300 w-full border-b border-gray-700">
+                        <AccordionItem value="item-1">
+                            <AccordionTrigger>
+                                <span>{exp.yearStart}-{exp.yearEnd}</span>
+                                <span>{exp.title}</span>
+                                <span>@{exp.company}</span>
+                            </AccordionTrigger>
+                            <AccordionContent>
+                                <div>{exp.description}</div>
+                            </AccordionContent>
+                        </AccordionItem>
+                    </Accordion>
+                ))}
+            </div>
         </div>
 
-        <div className="p-2 border border-gray-700 mt-8 rounded-2xl min-h-[100px]">
-            education
+        <div className="p-2 mt-8 rounded-2xl min-h-[100px]">
+            <div className="text-xl text-gray-300">education</div>
+            <div className="mb-3">
+                {educations?.map(educ => (
+                    <Accordion type="single" key={educ.id} collapsible className="text-gray-300 w-full border-b border-gray-700">
+                        <AccordionItem value="item-1">
+                            <AccordionTrigger>
+                                <span>{educ.yearStart}-{educ.yearEnd}</span>
+                                <span>{educ.title}</span>
+                                <span>{educ.email}</span>
+                            </AccordionTrigger>
+                            <AccordionContent>
+                                <div>{educ.description}</div>
+                            </AccordionContent>
+                        </AccordionItem>
+                    </Accordion>
+                ))}
+
+            </div>
         </div>
-        <div className="p-2 border border-gray-700 mt-8 rounded-2xl min-h-[100px]">
-            project
+        <div className="p-2 mt-8 rounded-2xl min-h-[100px]">
+            <div className="text-xl text-gray-300">project</div>
+            <div className="mb-3">
+                {projects?.map(pr => (
+                    <Accordion type="single" key={pr.id} collapsible className="text-gray-300 w-full border-b border-gray-700">
+                        <AccordionItem value="item-1">
+                            <AccordionTrigger>
+                                <span>{pr.yearStart}-{pr.yearEnd}</span>
+                                <span>{pr.title}</span>
+                                <span>{pr.url}</span>
+                            </AccordionTrigger>
+                            <AccordionContent>
+                                <div>{pr.description}</div>
+                            </AccordionContent>
+                        </AccordionItem>
+                    </Accordion>
+                ))}
+            </div>
         </div>
     </div>
 }

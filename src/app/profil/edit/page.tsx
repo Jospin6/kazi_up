@@ -64,7 +64,7 @@ export default function Edit() {
                 {isAddExperienceOpen && (<ExperienceForm />)}
             </div>
             <div className="mt-4">
-                <h1 className="text-xl font-semibold mb-4 text-gray-100">Projects</h1>
+                <h1 className="text-xl font-semibold mb-4 text-gray-100">Educations</h1>
                 <div className="pb-4 w-full mb-3">
                     <div className="mb-3">
                         {educations?.map(educ => (
@@ -87,7 +87,7 @@ export default function Edit() {
                 {isAddProjectOpen && (<ProjectForm />)}
             </div>
             <div className="mt-4">
-                <h1 className="text-xl font-semibold mb-4 text-gray-100">Educations</h1>
+                <h1 className="text-xl font-semibold mb-4 text-gray-100">Projects</h1>
                 <div className="pb-4 w-full mb-3">
                     <div className="mb-3">
                         {projects?.map(pr => (
