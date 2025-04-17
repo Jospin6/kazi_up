@@ -48,7 +48,7 @@ export const login = createAsyncThunk("auth/login", async ({ email, password }: 
 
         return response.data;
     } catch (error: any) {
-        console.error("Erreur Axios :", error.response?.data || error.message);
+        console.log("Erreur Axios :", error.response?.data || error.message);
         return rejectWithValue(error.response?.data || "Erreur inconnue");
     }
 })
@@ -70,7 +70,7 @@ export const signup = createAsyncThunk(
                 });
             return response.data;
         } catch (error: any) {
-            console.error("Erreur Axios :", error.response?.data || error.message);
+            console.log("Erreur Axios :", error.response?.data || error.message);
             return rejectWithValue(error.response?.data || "Erreur inconnue");
         }
     }

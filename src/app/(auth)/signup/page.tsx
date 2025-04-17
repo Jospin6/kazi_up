@@ -39,7 +39,7 @@ export default function RegisterForm() {
         return
       }
     } catch (error) {
-      console.error("Error connexion :", error);
+      console.log("Error connexion :", error);
     }
     redirect("/");
   };
